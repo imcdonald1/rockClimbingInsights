@@ -1,0 +1,24 @@
+---
+title: "Climbing Insights"
+author: Ian McDonald
+output: html_notebook
+---
+
+installing packages
+```{r}
+install.packages("tidyverse")
+install.packages("RSQLite")
+```
+
+loading libraries
+```{r}
+library("tidyverse")
+library("RSQLite")
+```
+
+creating database connection
+```{r}
+con <- dbConnect(RSQLite::SQLite(), "database.sqlite")
+```
+
+
