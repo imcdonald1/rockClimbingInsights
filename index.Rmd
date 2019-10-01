@@ -14,11 +14,27 @@ loading libraries
 ```{r}
 library("tidyverse")
 library("RSQLite")
+library(ggplot2)
 ```
 
-creating database connection
+creating database connection and checking the table headers
 ```{r}
 con <- dbConnect(RSQLite::SQLite(), "database.sqlite")
-```
 
+dbListTables(con)
+dbListFields(con, "ascent")
+dbListFields(con, "grade")
+dbListFields(con, "method")
+dbListFields(con, "user")
+
+res <- dbGetQuery(con, "SELECT country, count(id) from user group by country order by count(id) desc limit 10;")
+
+p<-ggplot(data=res, aes(x=reorder(country, -res$`count(id)`), y=res$`count(id)`)) +
+  geom_bar(stat="identity") + xlab("Country of Residence") + ylab("Number of Climbers")
+
+p
+
+dbDisconnect(con)
+
+```
 
