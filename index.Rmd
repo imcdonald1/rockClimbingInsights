@@ -4,15 +4,15 @@ author: Ian McDonald
 output: html_notebook
 ---
 
-installing packages
+installing packages needed
 ```{r}
 install.packages("tidyverse")
 install.packages("RSQLite")
-install.packages("wesanderson")
 install.packages("RColorBrewer")
+install.packages("ggplot")
 ```
 
-loading libraries
+loading libraries that we installed
 ```{r}
 library("tidyverse")
 library("RSQLite")
@@ -20,7 +20,7 @@ library(ggplot2)
 library("RColorBrewer")
 ```
 
-creating database connection and checking the table headers
+Creating a connection to the database we will be using. This database houses all of the user entered data the was taken from 8a.nu. After creating the connections we then we run commmands to display all of the individual column names so we can identify the data stored in each table.
 ```{r}
 con <- dbConnect(RSQLite::SQLite(), "database.sqlite")
 
@@ -30,6 +30,27 @@ dbListFields(con, "grade")
 dbListFields(con, "method")
 dbListFields(con, "user")
 
+```
+#Time to Clean and Tidy Data
+We are first going to grab all data from each table and store them in a dataframe
+```{r}
+
+ascents <- dbGetQuery(con, "SELECT * FROM ASCENT;")
+grades <- dbGetQuery(con, "SELECT * FROM GRADE");
+methods <- dbGetQuery(con, "SELECT * FROM METHOD;")
+users <- dbGetQuery(con, "SELECT * FROM USER;")
+
+```
+
+Plot number of climbs of each different grade as a bar chart
+```{r}
+plot <- ggplot(ascents, aes(ascents$grade_id)) + geom_bar()
+plot
+```
+
+#Early Exploration
+Example Data Visualization
+```{r}
 res <- dbGetQuery(con, "SELECT country, count(id) from user group by country order by count(id) desc limit 10;")
 
 colorPal <- c("#712398", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#7C8A9B","#DA2391")
@@ -37,8 +58,4 @@ colorPal <- c("#712398", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", 
 p<-ggplot(data=res, aes(x=reorder(country, -res$`count(id)`), y=res$`count(id)`, colour = reorder(country, -res$`count(id)`), fill = reorder(country, -res$`count(id)`))) + geom_bar(stat="identity") + xlab("Country of Residence") + ylab("Number of Climbers")  +scale_color_manual(values=colorPal, aesthetics = c("colour", "fill"), name="Country")
 
 p
-
-dbDisconnect(con)
-
 ```
-
