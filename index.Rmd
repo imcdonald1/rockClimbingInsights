@@ -54,12 +54,22 @@ dim(users)
 colnames(users)
 ```
 Cleaning user dataframe.
-First we take all values in the height and weight columns and replace them with N/A value
+First we take all values in the height and weight and started columns and replace them with N/A value
 Then we need to take all empty valus in the remaining tables string fields and replace empty strings with na values
+
+Finally we create a tibble that will have the data we are going to be most interested in from this table.
 ```{r}
-users[, 7:8][users[,7:8]==0] <- NA
+colnames(users)[colnames(users) == 'id'] <- 'user_id'
+users[, 7:9][users[,7:9]==0] <- NA
 users[, 10:20][users[,10:20]==""] <- NA
-userInfo <- dplyr::tibble(id=users$id, height=users$height, weight=users$weight, city=users$city, country=users$country, year_started=users$started, occupation=users$occupation, birthday=users$birth)
+userInfo <- dplyr::tibble(id=users$user_id, height=users$height, weight=users$weight, city=users$city, country=users$country, year_started=users$started, occupation=users$occupation, birthday=users$birth)
+```
+
+##Next Looking at the ascent table
+A lot of data in this table is specific to what we are deciding to look at. We will need to clean a lot of this data.
+```{r}
+dim(ascents)
+colnames(ascents)
 ```
 #Early Exploration
 
@@ -69,11 +79,15 @@ plot <- ggplot(ascents, aes(x=grade_id)) + geom_bar() + xlab("Grade") + ylab("Nu
 plot
 ```
 
+```{r}
+hardestClimb <- ascents %>% group_by(user_id) %>% top_n(1, grade_id)
+hardestWithYear <- merge(hardestClimb,users, by="user_id")
+startPlot <- ggplot(hardestWithYear, aes(x=started,y=grade_id)) + geom_point() +  xlim(1950, 2019)
+startPlot
+```
 
 ```{r}
 res <- dbGetQuery(con, "SELECT country, count(id) from user group by country order by count(id) desc limit 10;")
-
-
 p<-ggplot(data=res, aes(x=reorder(country, -res$`count(id)`), y=res$`count(id)`)) + geom_bar(stat="identity") + xlab("Country of Residence") + ylab("Number of Climbers")
 p
 ```
