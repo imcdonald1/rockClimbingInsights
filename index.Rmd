@@ -7,10 +7,11 @@ output:
   html_notebook: default
   pdf_document: default
 ---
-#Intro
+Intro:
+
 Welcome to my data science project. The data I chose to examine for this was a dataset that was scraped from 8a.nu. This is a popular website used by rock climbers. 8a.nu offers a feature that allows users to log the climbs that they have completed. Additionally there is user data included that has information about the climbers who logged these climbs. As a rock climber myself, this data interested me as I hoped to learn a little bit more about climbers, but also learn more about climbing areas and individual climbs.
 
-# Setup
+Setup
 
 installing packages needed
 ```{r}
@@ -34,7 +35,7 @@ con <- dbConnect(RSQLite::SQLite(), "database.sqlite")
 dbListTables(con)
 ```
 
-#Gather All Data
+Gather All Data
 We are first going to grab all data from each table and store them in a dataframe.
 Right now our data is in the form of 4 tables store in an sqlite database. We will be sending a query to this database asking for each table one by one and creating dataframes from these results.
 ```{r}
@@ -46,9 +47,9 @@ users <- dbGetQuery(con, "SELECT * FROM USER;")
 
 ```
 
-#Time to Clean and Tidy Data
+Time to Clean and Tidy Data
 
-##First lets look at the Users Dataframe we created.
+First lets look at the Users Dataframe we created.
 ```{r}
 dim(users)
 colnames(users)
@@ -65,7 +66,7 @@ users[, 10:20][users[,10:20]==""] <- NA
 userInfo <- dplyr::tibble(id=users$user_id, height=users$height, weight=users$weight, city=users$city, country=users$country, year_started=users$started, occupation=users$occupation, birthday=users$birth)
 ```
 
-##Next Looking at the ascent table
+Next Looking at the ascent table
 A lot of data in this table is specific to what we are deciding to look at. We will need to clean a lot of this data.
 ```{r}
 dim(ascents)
@@ -96,7 +97,19 @@ colnames(grades)
 grades[, 1:14][grades[,1:14]==0] <- NA
 ```
 
-#Early Exploration
+Time to clean the last table the method table
+The method table holds information on the method of climbing done.
+In climbing there are different style of climbing based on certain aspects such as if you have climbed a route before. This table helps us assign a type to each climb that is logged.
+```{r}
+dim(methods)
+colnames(methods)
+```
+```{r}
+methods$name <- as.factor(methods$name)
+levels(methods$name)
+```
+
+Early Exploration
 
 The ascents table has a lot of logged climbs in it. Lets look at this data
 Plot number of climbs logged at each different grade as a bar chart
@@ -122,3 +135,6 @@ usersPerCountry <- head(usersPerCountry, 10)
 plotP <- ggplot(usersPerCountry, aes(country, n)) + geom_col() + ylab("Number of Users") + xlab("Country")
 plotP
 ```
+
+
+Finally some things I would like to look into are things like the relationship between size and climbing ability, the relationship between location and climbing ability.  
