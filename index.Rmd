@@ -28,7 +28,7 @@ library(ggplot2)
 library("RColorBrewer")
 ```
 
-Creating a connection to the database we will be using. This database houses all of the user entered data the was taken from 8a.nu
+Creating a connection to the database we will be using. This database houses all of the user entered data the was taken from 8a.nu This data is all self reported data. Due to this there will be some level of inaccuracy and potentially wrong data that users have entered. This will cause there to be lots of outliers in some of the data.
 ```{r}
 con <- dbConnect(RSQLite::SQLite(), "database.sqlite")
 dbListTables(con)
@@ -71,23 +71,54 @@ A lot of data in this table is specific to what we are deciding to look at. We w
 dim(ascents)
 colnames(ascents)
 ```
+
+This code is to replace empty values with NA in certain rows and to remove other rows from the data frame that we wont be using
+```{r}
+ascents[, 4][ascents[,4]==""] <- NA
+ascents[, 14][ascents[,14]==""] <- NA
+ascents[, 15][ascents[,15]==0] <- NA
+ascents[, 16][ascents[,16]==""] <- NA
+ascents[, 17][ascents[,17]==0] <- NA
+ascents[, 18][ascents[,18]==""] <- NA
+ascents[, 19][ascents[,19]==""] <- NA
+ascents[, 20][ascents[,20]=="\n"] <- NA
+ascents$raw_notes <- NULL
+```
+
+##Next Looking at the grades table
+The grades table holds information used to convert between the differnet climbing systems. There are 4 main climbing rating systems.
+```{r}
+dim(grades)
+colnames(grades)
+```
+
+```{r}
+grades[, 1:14][grades[,1:14]==0] <- NA
+```
+
 #Early Exploration
 
+The ascents table has a lot of logged climbs in it. Lets look at this data
 Plot number of climbs logged at each different grade as a bar chart
 ```{r}
 plot <- ggplot(ascents, aes(x=grade_id)) + geom_bar() + xlab("Grade") + ylab("Number of Logged Climbs")
 plot
 ```
 
+Look at the hardest climb each user has done and the year they started climbing
 ```{r}
-hardestClimb <- ascents %>% group_by(user_id) %>% top_n(1, grade_id)
+hardestClimb <- ascents %>% group_by(user_id) %>% filter(grade_id == max(grade_id))
 hardestWithYear <- merge(hardestClimb,users, by="user_id")
-startPlot <- ggplot(hardestWithYear, aes(x=started,y=grade_id)) + geom_point() +  xlim(1950, 2019)
+startPlot <- ggplot(hardestWithYear, aes(x=started,y=grade_id)) + geom_point() +  xlim(1950, 2019) + xlab("Year Started Climbing") + ylab("Highest Grade Climbed")
 startPlot
 ```
 
+Now lets look at the number of users from each of the top 10 countries
 ```{r}
-res <- dbGetQuery(con, "SELECT country, count(id) from user group by country order by count(id) desc limit 10;")
-p<-ggplot(data=res, aes(x=reorder(country, -res$`count(id)`), y=res$`count(id)`)) + geom_bar(stat="identity") + xlab("Country of Residence") + ylab("Number of Climbers")
-p
+usersPerCountry <- count(users, country)
+usersPerCountry <- usersPerCountry[order(usersPerCountry$n, decreasing = TRUE),]
+usersPerCountry$country <- factor(usersPerCountry$country, levels = usersPerCountry$country)
+usersPerCountry <- head(usersPerCountry, 10)
+plotP <- ggplot(usersPerCountry, aes(country, n)) + geom_col() + ylab("Number of Users") + xlab("Country")
+plotP
 ```
