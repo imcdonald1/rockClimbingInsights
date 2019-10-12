@@ -1,7 +1,11 @@
 ---
 title: "Climbing Insights"
-author: Ian McDonald
-output: html_notebook
+author: "Ian McDonald"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
 ---
 #Intro
 Welcome to my data science project. The data I chose to examine for this was a dataset that was scraped from 8a.nu. This is a popular website used by rock climbers. 8a.nu offers a feature that allows users to log the climbs that they have completed. Additionally there is user data included that has information about the climbers who logged these climbs. As a rock climber myself, this data interested me as I hoped to learn a little bit more about climbers, but also learn more about climbing areas and individual climbs.
@@ -24,19 +28,15 @@ library(ggplot2)
 library("RColorBrewer")
 ```
 
-Creating a connection to the database we will be using. This database houses all of the user entered data the was taken from 8a.nu. After creating the connections we then we run commmands to display all of the individual column names so we can identify the data stored in each table.
+Creating a connection to the database we will be using. This database houses all of the user entered data the was taken from 8a.nu
 ```{r}
 con <- dbConnect(RSQLite::SQLite(), "database.sqlite")
-
 dbListTables(con)
-dbListFields(con, "ascent")
-dbListFields(con, "grade")
-dbListFields(con, "method")
-dbListFields(con, "user")
-
 ```
-#Time to Clean and Tidy Data
-We are first going to grab all data from each table and store them in a dataframe
+
+#Gather All Data
+We are first going to grab all data from each table and store them in a dataframe.
+Right now our data is in the form of 4 tables store in an sqlite database. We will be sending a query to this database asking for each table one by one and creating dataframes from these results.
 ```{r}
 
 ascents <- dbGetQuery(con, "SELECT * FROM ASCENT;")
@@ -46,10 +46,20 @@ users <- dbGetQuery(con, "SELECT * FROM USER;")
 
 ```
 
-Cleaning user dataframe. First we take all values in the height and weight columns and replace them with N/A value
+#Time to Clean and Tidy Data
+
+##First lets look at the Users Dataframe we created.
+```{r}
+dim(users)
+colnames(users)
+```
+Cleaning user dataframe.
+First we take all values in the height and weight columns and replace them with N/A value
+Then we need to take all empty valus in the remaining tables string fields and replace empty strings with na values
 ```{r}
 users[, 7:8][users[,7:8]==0] <- NA
-userBodyInfo <- dplyr::tibble(id=users$id, height=users$height, weight=users$weight)
+users[, 10:20][users[,10:20]==""] <- NA
+userInfo <- dplyr::tibble(id=users$id, height=users$height, weight=users$weight, city=users$city, country=users$country, year_started=users$started, occupation=users$occupation, birthday=users$birth)
 ```
 #Early Exploration
 
@@ -64,6 +74,6 @@ plot
 res <- dbGetQuery(con, "SELECT country, count(id) from user group by country order by count(id) desc limit 10;")
 
 
-p<-ggplot(data=res, aes(x=reorder(country, -res$`count(id)`), y=res$`count(id)`)) + geom_bar(stat="identity") + xlab("Country of Residence") + ylab("Number of Climbers") + theme
+p<-ggplot(data=res, aes(x=reorder(country, -res$`count(id)`), y=res$`count(id)`)) + geom_bar(stat="identity") + xlab("Country of Residence") + ylab("Number of Climbers")
 p
 ```
