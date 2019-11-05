@@ -30,6 +30,8 @@ library("RColorBrewer")
 ```
 
 Creating a connection to the database we will be using. This database houses all of the user entered data the was taken from 8a.nu This data is all self reported data. Due to this there will be some level of inaccuracy and potentially wrong data that users have entered. This will cause there to be lots of outliers in some of the data.
+
+Download data from https://www.kaggle.com/dcohen21/8anu-climbing-logbook
 ```{r}
 con <- dbConnect(RSQLite::SQLite(), "database.sqlite")
 dbListTables(con)
