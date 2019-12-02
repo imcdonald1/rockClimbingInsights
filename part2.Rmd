@@ -1,0 +1,64 @@
+---
+title: "Climbing Insights"
+author: "Ian McDonald"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+Load library to include code from another file.
+```{r}
+library("knitr")
+library("caret")
+```
+
+Add perviously done work from the musicInsights.Rmd file
+```{r}
+purl("index.Rmd", output = "part1.r")
+source("part1.r")
+```
+
+My goal is to find out what things can predict a users hardest climb
+```{r}
+hardest_climb_model <- lm(hardestWithYear, formula = grade_id ~ height + weight + started + sex)
+summary(hardest_climb_model)
+```
+
+creating a dataset to train a model and compare results.
+```{r}
+myvars <- c("grade_id", "height", "weight", "started", "sex")
+grade_model_data <- hardestWithYear[myvars]
+grade_model_data <- na.omit(grade_model_data)
+```
+
+splitting the previosly made data into two sets. One to train a model and the other to determine how the model could do in prediciting highest grade using the remaining data.
+We are using a validation set here to evaluate the models performance
+```{r}
+set.seed(926)
+sample <- sample.int(n = nrow(grade_model_data), 
+                     size = floor(.90*nrow(grade_model_data)), # Selecting 90% of data
+                     replace = F)
+
+train_data <- grade_model_data[sample, ]
+test_data  <- grade_model_data[-sample, ]
+```
+
+Train a model using our previously seperated training data
+```{r}
+grade_model <- lm(train_data, formula = grade_id ~ height + weight + started + sex)
+summary(grade_model)
+```
+
+lowest test sample RMSE is the preferred model.
+```{r}
+grade_predictions <- grade_model %>% predict(test_data)
+grade_predictions <- as.data.frame(grade_predictions)
+colnames(grade_predictions)[colnames(grade_predictions) == "grade_predictions"] <- "grade_id"
+grade_predictions["grade_id"] <- floor(grade_predictions["grade_id"])
+RMSE(grade_predictions, test_data$grade_id)/mean(test_data$grade_id)
+```
+```{r}
+sum(grade_predictions$grade_id == test_data$grade_id)/nrow(test_data)
+```

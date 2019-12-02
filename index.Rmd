@@ -13,25 +13,17 @@ Welcome to my data science project. The data I chose to examine for this was a d
 
 Setup
 
-installing packages needed
-```{r}
-install.packages("tidyverse")
-install.packages("RSQLite")
-install.packages("RColorBrewer")
-install.packages("ggplot")
-```
-
-loading libraries that we installed
+loading libraries that we used
 ```{r}
 library("tidyverse")
 library("RSQLite")
-library(ggplot2)
+library("ggplot2")
 library("RColorBrewer")
 ```
 
 Creating a connection to the database we will be using. This database houses all of the user entered data the was taken from 8a.nu This data is all self reported data. Due to this there will be some level of inaccuracy and potentially wrong data that users have entered. This will cause there to be lots of outliers in some of the data.
 
-Download data from https://www.kaggle.com/dcohen21/8anu-climbing-logbook
+Download data from https://www.kaggle.com/dcohen21/8anu-climbing-logbookg
 ```{r}
 con <- dbConnect(RSQLite::SQLite(), "database.sqlite")
 dbListTables(con)
