@@ -2,13 +2,13 @@
 title: "Climbing Insights"
 author: "Ian McDonald"
 output:
+  pdf_document: default
+  html_notebook: default
   html_document:
     df_print: paged
-  html_notebook: default
-  pdf_document: default
 ---
 
-Load library to include code from another file.
+Load libraries that will be needed in this file.
 ```{r}
 library("knitr")
 library("caret")
@@ -20,13 +20,13 @@ purl("index.Rmd", output = "part1.r")
 source("part1.r")
 ```
 
-My goal is to find out what things can predict a users hardest climb
-```{r}
-hardest_climb_model <- lm(hardestWithYear, formula = grade_id ~ height + weight + started + sex)
-summary(hardest_climb_model)
-```
+One of the things I would like to model is information about individual users and their hardest climbs.
+In climbing there are many factors that climbers may think influence the hardest they can climb.
+Often some of the factors that are thought of are physical factors such as height, weight and sex. 
+Some of the other factors that come into play are more specific to the climb and we cant analyze them. However one of these factors we can examine is the time since a climber started climbing. Using these factors we can hopefully make a model to determine a persons hardest climb accurately.
+My goal is to find out what things can predict a users hardest climb.
 
-creating a dataset to train a model and compare results.
+First we will be creating a dataset to train a model and compare results. This code will create a list of the column names we wish to keep from our large data set that holds our info about climbers and their hardest climbs. After we have this list we keep only those columns and create a new dataframe. Finally we omit any rows in the data that hold any columns containing an NA value.
 ```{r}
 myvars <- c("grade_id", "height", "weight", "started", "sex")
 grade_model_data <- hardestWithYear[myvars]
@@ -35,6 +35,7 @@ grade_model_data <- na.omit(grade_model_data)
 
 splitting the previosly made data into two sets. One to train a model and the other to determine how the model could do in prediciting highest grade using the remaining data.
 We are using a validation set here to evaluate the models performance
+Additionally we set the seed so the results are reproduceable.
 ```{r}
 set.seed(926)
 sample <- sample.int(n = nrow(grade_model_data), 
@@ -45,12 +46,19 @@ train_data <- grade_model_data[sample, ]
 test_data  <- grade_model_data[-sample, ]
 ```
 
-Train a model using our previously seperated training data
+Train a model using our previously seperated training data.
+The model we are trying to train will be predicting the highest grade a climber has ever entered as completed in the database.
+To try to predict this grade we will be using the climbers height, weight, year started, and, sex.
+The parameters and output make sense. These are all factors that seem to influence climbing ability.
+Some of the possible limits of this model are the large amount of missing data in the input data. There were thousands of rows where people hadn't entered one of these things.
 ```{r}
 grade_model <- lm(train_data, formula = grade_id ~ height + weight + started + sex)
 summary(grade_model)
 ```
 
+This test how accurate our model is using the predicted values.
+Before doing this we need to clean the data back to whole numbers since climbs are based on the numbers and cant have decimals.
+Then we use the RMSE functions to calculate our value.
 lowest test sample RMSE is the preferred model.
 ```{r}
 grade_predictions <- grade_model %>% predict(test_data)
@@ -59,6 +67,33 @@ colnames(grade_predictions)[colnames(grade_predictions) == "grade_predictions"] 
 grade_predictions["grade_id"] <- floor(grade_predictions["grade_id"])
 RMSE(grade_predictions, test_data$grade_id)/mean(test_data$grade_id)
 ```
+
+Now we are going to look at another source of data. This data was from the American Alpine Club in 2014 and shows the number of acciedents reported in the mountains during activites like climbing and moutainering.
+We are going to load this data from a csv file.
 ```{r}
-sum(grade_predictions$grade_id == test_data$grade_id)/nrow(test_data)
+injuries = read.csv("climbInjuries.csv", header = TRUE)
+```
+
+One of the things I am interested in seeing if there is any relaionship between the number of climbers who started in a year and the number of accidents. My goal here is see if there is some potential link between the the number of new climbers and the number of injuries in a given year. Here we are going to clean the data. First we need to generate some data by counting the number of users who started in each given year. Then we are going to remove any years not in our new data set. Our new data set is alread clean and is ready to be merge with the data we are generating below before we begin to plot it.
+```{r}
+new_per_year <- count(userInfo, year_started)
+colnames(new_per_year)[colnames(new_per_year) == "year_started"] <- "year"
+colnames(new_per_year)[colnames(new_per_year) == "n"] <- "num_new_climbers"
+new_per_year <- new_per_year[!rowSums(new_per_year[1] <1981),]
+new_per_year <- new_per_year[!rowSums(new_per_year[1] > 2013),]
+new_per_year <- na.omit(new_per_year)
+injuries <- merge(injuries,new_per_year, by="year")
+```
+
+showing injuries table for documentation purpose
+```{r}
+colnames(injuries)
+```
+
+Finally we are going to graph the number of new climbers per year and the number of injuries per year to see if there is a relationship.
+```{r}
+injury_plot <- ggplot(injuries, aes(x=year)) + geom_point(aes(y=num_new_climbers, colour ='blue')) +
+    geom_point(aes(y=num_of_accidents, colour ='red')) + ylab("Number of Climbers") + xlab("Year") +    scale_color_manual(labels = c("# of New Climbers", "# of Accidents"), values = c("blue", "red"))
+
+injury_plot
 ```
