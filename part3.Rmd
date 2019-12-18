@@ -1,0 +1,21 @@
+---
+title: "Climbing Insights"
+author: "Ian McDonald"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+Load libraries that will be needed in this file.
+```{r}
+library("knitr")
+library("caret")
+```
+
+Add perviously done work from the musicInsights.Rmd file
+```{r}
+purl("part2.Rmd", output = "part2.r")
+source("part2.r")
+```

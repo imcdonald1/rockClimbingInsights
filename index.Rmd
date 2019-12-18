@@ -98,6 +98,7 @@ In climbing there are different style of climbing based on certain aspects such 
 dim(methods)
 colnames(methods)
 ```
+
 ```{r}
 methods$name <- as.factor(methods$name)
 levels(methods$name)

@@ -14,7 +14,7 @@ library("knitr")
 library("caret")
 ```
 
-Add perviously done work from the musicInsights.Rmd file
+Add perviously done work from the index.Rmd file
 ```{r}
 purl("index.Rmd", output = "part1.r")
 source("part1.r")
