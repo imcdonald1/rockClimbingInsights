@@ -1751,212 +1751,161 @@ summary {
 
 
 <!-- rnb-text-begin -->
-<p>Load libraries that will be needed in this file.</p>
+<p>Intro:</p>
+<p>Welcome to my data science project. The data I chose to examine for this was a dataset that was scraped from 8a.nu. This is a popular website used by rock climbers. 8a.nu offers a feature that allows users to log the climbs that they have completed. Additionally there is user data included that has information about the climbers who logged these climbs. As a rock climber myself, this data interested me as I hoped to learn a little bit more about climbers, but also learn more about climbing areas and individual climbs.</p>
+<p>Setup</p>
+<p>loading libraries that we used</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShcImtuaXRyXCIpXG5saWJyYXJ5KFwiY2FyZXRcIilcbmBgYCJ9 -->
-<pre class="r"><code>library(&quot;knitr&quot;)
-library(&quot;caret&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiTG9hZGluZyByZXF1aXJlZCBwYWNrYWdlOiBsYXR0aWNlXG5cbkF0dGFjaGluZyBwYWNrYWdlOiDigJhjYXJldOKAmVxuXG5UaGUgZm9sbG93aW5nIG9iamVjdCBpcyBtYXNrZWQgZnJvbSDigJhwYWNrYWdlOnB1cnJy4oCZOlxuXG4gICAgbGlmdFxuIn0= -->
-<pre><code>Loading required package: lattice
-
-Attaching package: ‘caret’
-
-The following object is masked from ‘package:purrr’:
-
-    lift</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Add perviously done work from the index.Rmd file</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHVybChcImluZGV4LlJtZFwiLCBvdXRwdXQgPSBcInBhcnQxLnJcIilcbmBgYCJ9 -->
-<pre class="r"><code>purl(&quot;index.Rmd&quot;, output = &quot;part1.r&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5cbnByb2Nlc3NpbmcgZmlsZTogaW5kZXguUm1kXG4ifQ== -->
-<pre><code>
-
-processing file: index.Rmd</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgICAwJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMyVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgIDclXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfC4uLi4uLi4uLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDEwJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAxNCVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLi4uLi4uLi4uLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMTclXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfC4uLi4uLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDIxJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAyNCVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMjglXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDMxJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAzNCVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMzglXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDQxJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICA0NSVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgNDglXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDUyJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICA1NSVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgNTklXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDYyJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICA2NiVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgNjklXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDcyJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4gICAgICAgICAgICAgICAgICAgICAgICB8ICA3NiVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgfCAgNzklXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4gICAgICAgICAgICAgICAgIHwgIDgzJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICB8ICA4NiVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4gICAgICAgICAgfCAgOTAlXG4gIHwgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcbiAgfC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uICAgICAgIHwgIDkzJVxuICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXG4gIHwuLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4gICB8ICA5NyVcbiAgfCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuICB8Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4ufCAxMDAlXG4ifQ== -->
-<pre><code>
-  |                                                                                                         
-  |                                                                                                   |   0%
-  |                                                                                                         
-  |...                                                                                                |   3%
-  |                                                                                                         
-  |.......                                                                                            |   7%
-  |                                                                                                         
-  |..........                                                                                         |  10%
-  |                                                                                                         
-  |..............                                                                                     |  14%
-  |                                                                                                         
-  |.................                                                                                  |  17%
-  |                                                                                                         
-  |....................                                                                               |  21%
-  |                                                                                                         
-  |........................                                                                           |  24%
-  |                                                                                                         
-  |...........................                                                                        |  28%
-  |                                                                                                         
-  |...............................                                                                    |  31%
-  |                                                                                                         
-  |..................................                                                                 |  34%
-  |                                                                                                         
-  |......................................                                                             |  38%
-  |                                                                                                         
-  |.........................................                                                          |  41%
-  |                                                                                                         
-  |............................................                                                       |  45%
-  |                                                                                                         
-  |................................................                                                   |  48%
-  |                                                                                                         
-  |...................................................                                                |  52%
-  |                                                                                                         
-  |.......................................................                                            |  55%
-  |                                                                                                         
-  |..........................................................                                         |  59%
-  |                                                                                                         
-  |.............................................................                                      |  62%
-  |                                                                                                         
-  |.................................................................                                  |  66%
-  |                                                                                                         
-  |....................................................................                               |  69%
-  |                                                                                                         
-  |........................................................................                           |  72%
-  |                                                                                                         
-  |...........................................................................                        |  76%
-  |                                                                                                         
-  |...............................................................................                    |  79%
-  |                                                                                                         
-  |..................................................................................                 |  83%
-  |                                                                                                         
-  |.....................................................................................              |  86%
-  |                                                                                                         
-  |.........................................................................................          |  90%
-  |                                                                                                         
-  |............................................................................................       |  93%
-  |                                                                                                         
-  |................................................................................................   |  97%
-  |                                                                                                         
-  |...................................................................................................| 100%</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoib3V0cHV0IGZpbGU6IHBhcnQxLnJcbiJ9 -->
-<pre><code>output file: part1.r</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIFwicGFydDEuclwiXG4ifQ== -->
-<pre><code>[1] &quot;part1.r&quot;</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlKFwicGFydDEuclwiKVxuYGBgIn0= -->
-<pre class="r"><code>source(&quot;part1.r&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiV2FybmluZzogY2FsbCBkYkRpc2Nvbm5lY3QoKSB3aGVuIGZpbmlzaGVkIHdvcmtpbmcgd2l0aCBhIGNvbm5lY3Rpb25cbiJ9 -->
-<pre><code>Warning: call dbDisconnect() when finished working with a connection</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>One of the things I would like to model is information about individual users and their hardest climbs. In climbing there are many factors that climbers may think influence the hardest they can climb. Often some of the factors that are thought of are physical factors such as height, weight and sex. Some of the other factors that come into play are more specific to the climb and we cant analyze them. However one of these factors we can examine is the time since a climber started climbing. Using these factors we can hopefully make a model to determine a persons hardest climb accurately. My goal is to find out what things can predict a users hardest climb.</p>
-<p>First we will be creating a dataset to train a model and compare results. This code will create a list of the column names we wish to keep from our large data set that holds our info about climbers and their hardest climbs. After we have this list we keep only those columns and create a new dataframe. Finally we omit any rows in the data that hold any columns containing an NA value.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubXl2YXJzIDwtIGMoXCJncmFkZV9pZFwiLCBcImhlaWdodFwiLCBcIndlaWdodFwiLCBcInN0YXJ0ZWRcIiwgXCJzZXhcIilcbmdyYWRlX21vZGVsX2RhdGEgPC0gaGFyZGVzdFdpdGhZZWFyW215dmFyc11cbmdyYWRlX21vZGVsX2RhdGEgPC0gbmEub21pdChncmFkZV9tb2RlbF9kYXRhKVxuYGBgIn0= -->
-<pre class="r"><code>myvars &lt;- c(&quot;grade_id&quot;, &quot;height&quot;, &quot;weight&quot;, &quot;started&quot;, &quot;sex&quot;)
-grade_model_data &lt;- hardestWithYear[myvars]
-grade_model_data &lt;- na.omit(grade_model_data)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShcInRpZHl2ZXJzZVwiKVxubGlicmFyeShcIlJTUUxpdGVcIilcbmxpYnJhcnkoXCJnZ3Bsb3QyXCIpXG5saWJyYXJ5KFwiUkNvbG9yQnJld2VyXCIpXG5gYGAifQ== -->
+<pre class="r"><code>library(&quot;tidyverse&quot;)
+library(&quot;RSQLite&quot;)
+library(&quot;ggplot2&quot;)
+library(&quot;RColorBrewer&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>splitting the previosly made data into two sets. One to train a model and the other to determine how the model could do in prediciting highest grade using the remaining data. We are using a validation set here to evaluate the models performance Additionally we set the seed so the results are reproduceable.</p>
+<p>Creating a connection to the database we will be using. This database houses all of the user entered data the was taken from 8a.nu This data is all self reported data. Due to this there will be some level of inaccuracy and potentially wrong data that users have entered. This will cause there to be lots of outliers in some of the data.</p>
+<p>Download data from <a href="https://www.kaggle.com/dcohen21/8anu-climbing-logbookg" class="uri">https://www.kaggle.com/dcohen21/8anu-climbing-logbookg</a></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2V0LnNlZWQoOTI2KVxuc2FtcGxlIDwtIHNhbXBsZS5pbnQobiA9IG5yb3coZ3JhZGVfbW9kZWxfZGF0YSksIFxuICAgICAgICAgICAgICAgICAgICAgc2l6ZSA9IGZsb29yKC45MCpucm93KGdyYWRlX21vZGVsX2RhdGEpKSwgIyBTZWxlY3RpbmcgOTAlIG9mIGRhdGFcbiAgICAgICAgICAgICAgICAgICAgIHJlcGxhY2UgPSBGKVxuXG50cmFpbl9kYXRhIDwtIGdyYWRlX21vZGVsX2RhdGFbc2FtcGxlLCBdXG50ZXN0X2RhdGEgIDwtIGdyYWRlX21vZGVsX2RhdGFbLXNhbXBsZSwgXVxuYGBgIn0= -->
-<pre class="r"><code>set.seed(926)
-sample &lt;- sample.int(n = nrow(grade_model_data), 
-                     size = floor(.90*nrow(grade_model_data)), # Selecting 90% of data
-                     replace = F)
-
-train_data &lt;- grade_model_data[sample, ]
-test_data  &lt;- grade_model_data[-sample, ]</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29uIDwtIGRiQ29ubmVjdChSU1FMaXRlOjpTUUxpdGUoKSwgXCJkYXRhYmFzZS5zcWxpdGVcIilcbmRiTGlzdFRhYmxlcyhjb24pXG5gYGAifQ== -->
+<pre class="r"><code>con &lt;- dbConnect(RSQLite::SQLite(), &quot;database.sqlite&quot;)
+dbListTables(con)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Train a model using our previously seperated training data. The model we are trying to train will be predicting the highest grade a climber has ever entered as completed in the database. To try to predict this grade we will be using the climbers height, weight, year started, and, sex. The parameters and output make sense. These are all factors that seem to influence climbing ability. Some of the possible limits of this model are the large amount of missing data in the input data. There were thousands of rows where people hadn’t entered one of these things.</p>
+<p>Gather All Data We are first going to grab all data from each table and store them in a dataframe. Right now our data is in the form of 4 tables store in an sqlite database. We will be sending a query to this database asking for each table one by one and creating dataframes from these results. The ascents table has each recorded ascent from different users. The grades table has a chart to convert the grades of climbs to the different grading systems used by people in differnet parts of the world. The methods table holds a key to look at different methods of climbing such as trad, sport, or bouldering. Finally the users table holds information about different users.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ3JhZGVfbW9kZWwgPC0gbG0odHJhaW5fZGF0YSwgZm9ybXVsYSA9IGdyYWRlX2lkIH4gaGVpZ2h0ICsgd2VpZ2h0ICsgc3RhcnRlZCArIHNleClcbnN1bW1hcnkoZ3JhZGVfbW9kZWwpXG5gYGAifQ== -->
-<pre class="r"><code>grade_model &lt;- lm(train_data, formula = grade_id ~ height + weight + started + sex)
-summary(grade_model)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXG5DYWxsOlxubG0oZm9ybXVsYSA9IGdyYWRlX2lkIH4gaGVpZ2h0ICsgd2VpZ2h0ICsgc3RhcnRlZCArIHNleCwgZGF0YSA9IHRyYWluX2RhdGEpXG5cblJlc2lkdWFsczpcbiAgICBNaW4gICAgICAxUSAgTWVkaWFuICAgICAgM1EgICAgIE1heCBcbi01NC45NDcgIC01LjI3NiAgIDEuMDAzICAgNi4yMDMgIDMyLjczMiBcblxuQ29lZmZpY2llbnRzOlxuICAgICAgICAgICAgICBFc3RpbWF0ZSBTdGQuIEVycm9yIHQgdmFsdWUgUHIoPnx0fCkgICAgXG4oSW50ZXJjZXB0KSA4NDQuMzk4NjkyICAxMi40Mzc4OTYgIDY3Ljg4OSAgIDwyZS0xNiAqKipcbmhlaWdodCAgICAgICAgMC4wMDMyMDggICAwLjAwMjgxMSAgIDEuMTQxICAgIDAuMjU0ICAgIFxud2VpZ2h0ICAgICAgIC0wLjIyNTYzMCAgIDAuMDA1NDAxIC00MS43NzQgICA8MmUtMTYgKioqXG5zdGFydGVkICAgICAgLTAuMzg2MjQwICAgMC4wMDYxOTcgLTYyLjMyOCAgIDwyZS0xNiAqKipcbnNleCAgICAgICAgICAtNy43NTg0MDIgICAwLjE3MDM0NSAtNDUuNTQ1ICAgPDJlLTE2ICoqKlxuLS0tXG5TaWduaWYuIGNvZGVzOiAgMCDigJgqKirigJkgMC4wMDEg4oCYKirigJkgMC4wMSDigJgq4oCZIDAuMDUg4oCYLuKAmSAwLjEg4oCYIOKAmSAxXG5cblJlc2lkdWFsIHN0YW5kYXJkIGVycm9yOiA4LjcwMiBvbiAzNDA2MyBkZWdyZWVzIG9mIGZyZWVkb21cbk11bHRpcGxlIFItc3F1YXJlZDogIDAuMTU5MixcdEFkanVzdGVkIFItc3F1YXJlZDogIDAuMTU5MSBcbkYtc3RhdGlzdGljOiAgMTYxMiBvbiA0IGFuZCAzNDA2MyBERiwgIHAtdmFsdWU6IDwgMi4yZS0xNlxuIn0= -->
-<pre><code>
-Call:
-lm(formula = grade_id ~ height + weight + started + sex, data = train_data)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--54.947  -5.276   1.003   6.203  32.732 
-
-Coefficients:
-              Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 844.398692  12.437896  67.889   &lt;2e-16 ***
-height        0.003208   0.002811   1.141    0.254    
-weight       -0.225630   0.005401 -41.774   &lt;2e-16 ***
-started      -0.386240   0.006197 -62.328   &lt;2e-16 ***
-sex          -7.758402   0.170345 -45.545   &lt;2e-16 ***
----
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-
-Residual standard error: 8.702 on 34063 degrees of freedom
-Multiple R-squared:  0.1592,    Adjusted R-squared:  0.1591 
-F-statistic:  1612 on 4 and 34063 DF,  p-value: &lt; 2.2e-16</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Looking at the summary of this model we can see that not all factors we predicted were as important as the rest. Height had little statistical significance to the hardest grade someone could climb. However the other three factors were signifacnt and all equally important to predict the hardest climb.</p>
-<p>Now we are going to look at another source of data. This data was from the American Alpine Club in 2014 and shows the number of acciedents reported in the mountains during activites like climbing and moutainering. We are going to load this data from a csv file.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5qdXJpZXMgPSByZWFkLmNzdihcImNsaW1iSW5qdXJpZXMuY3N2XCIsIGhlYWRlciA9IFRSVUUpXG5gYGAifQ== -->
-<pre class="r"><code>injuries = read.csv(&quot;climbInjuries.csv&quot;, header = TRUE)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG5hc2NlbnRzIDwtIGRiR2V0UXVlcnkoY29uLCBcIlNFTEVDVCAqIEZST00gQVNDRU5UO1wiKVxuZ3JhZGVzIDwtIGRiR2V0UXVlcnkoY29uLCBcIlNFTEVDVCAqIEZST00gR1JBREVcIik7XG5tZXRob2RzIDwtIGRiR2V0UXVlcnkoY29uLCBcIlNFTEVDVCAqIEZST00gTUVUSE9EO1wiKVxudXNlcnMgPC0gZGJHZXRRdWVyeShjb24sIFwiU0VMRUNUICogRlJPTSBVU0VSO1wiKVxuXG5gYGAifQ== -->
+<pre class="r"><code>
+ascents &lt;- dbGetQuery(con, &quot;SELECT * FROM ASCENT;&quot;)
+grades &lt;- dbGetQuery(con, &quot;SELECT * FROM GRADE&quot;);
+methods &lt;- dbGetQuery(con, &quot;SELECT * FROM METHOD;&quot;)
+users &lt;- dbGetQuery(con, &quot;SELECT * FROM USER;&quot;)
+</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>One of the things I am interested in seeing if there is any relaionship between the number of climbers who started in a year and the number of accidents. My goal here is see if there is some potential link between the the number of new climbers and the number of injuries in a given year. Here we are going to clean the data. First we need to generate some data by counting the number of users who started in each given year. Then we are going to remove any years not in our new data set. Our new data set is alread clean and is ready to be merge with the data we are generating below before we begin to plot it.</p>
+<p>Time to Clean and Tidy Data</p>
+<p>First lets look at the Users Dataframe we created.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubmV3X3Blcl95ZWFyIDwtIGNvdW50KHVzZXJJbmZvLCB5ZWFyX3N0YXJ0ZWQpXG5jb2xuYW1lcyhuZXdfcGVyX3llYXIpW2NvbG5hbWVzKG5ld19wZXJfeWVhcikgPT0gXCJ5ZWFyX3N0YXJ0ZWRcIl0gPC0gXCJ5ZWFyXCJcbmNvbG5hbWVzKG5ld19wZXJfeWVhcilbY29sbmFtZXMobmV3X3Blcl95ZWFyKSA9PSBcIm5cIl0gPC0gXCJudW1fbmV3X2NsaW1iZXJzXCJcbm5ld19wZXJfeWVhciA8LSBuZXdfcGVyX3llYXJbIXJvd1N1bXMobmV3X3Blcl95ZWFyWzFdIDwxOTgxKSxdXG5uZXdfcGVyX3llYXIgPC0gbmV3X3Blcl95ZWFyWyFyb3dTdW1zKG5ld19wZXJfeWVhclsxXSA+IDIwMTMpLF1cbm5ld19wZXJfeWVhciA8LSBuYS5vbWl0KG5ld19wZXJfeWVhcilcbmluanVyaWVzIDwtIG1lcmdlKGluanVyaWVzLG5ld19wZXJfeWVhciwgYnk9XCJ5ZWFyXCIpXG5gYGAifQ== -->
-<pre class="r"><code>new_per_year &lt;- count(userInfo, year_started)
-colnames(new_per_year)[colnames(new_per_year) == &quot;year_started&quot;] &lt;- &quot;year&quot;
-colnames(new_per_year)[colnames(new_per_year) == &quot;n&quot;] &lt;- &quot;num_new_climbers&quot;
-new_per_year &lt;- new_per_year[!rowSums(new_per_year[1] &lt;1981),]
-new_per_year &lt;- new_per_year[!rowSums(new_per_year[1] &gt; 2013),]
-new_per_year &lt;- na.omit(new_per_year)
-injuries &lt;- merge(injuries,new_per_year, by=&quot;year&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGltKHVzZXJzKVxuY29sbmFtZXModXNlcnMpXG5gYGAifQ== -->
+<pre class="r"><code>dim(users)
+colnames(users)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>showing injuries table for documentation purpose</p>
+<p>Cleaning user dataframe. First we take all values in the height and weight and started columns and replace them with N/A value Then we need to take all empty valus in the remaining tables string fields and replace empty strings with na values</p>
+<p>Finally we create a tibble that will have the data we are going to be most interested in from this table.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29sbmFtZXMoaW5qdXJpZXMpXG5gYGAifQ== -->
-<pre class="r"><code>colnames(injuries)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29sbmFtZXModXNlcnMpW2NvbG5hbWVzKHVzZXJzKSA9PSAnaWQnXSA8LSAndXNlcl9pZCdcbnVzZXJzWywgNzo5XVt1c2Vyc1ssNzo5XT09MF0gPC0gTkFcbnVzZXJzWywgMTA6MjBdW3VzZXJzWywxMDoyMF09PVwiXCJdIDwtIE5BXG51c2VySW5mbyA8LSBkcGx5cjo6dGliYmxlKGlkPXVzZXJzJHVzZXJfaWQsIGhlaWdodD11c2VycyRoZWlnaHQsIHdlaWdodD11c2VycyR3ZWlnaHQsIGNpdHk9dXNlcnMkY2l0eSwgY291bnRyeT11c2VycyRjb3VudHJ5LCB5ZWFyX3N0YXJ0ZWQ9dXNlcnMkc3RhcnRlZCwgb2NjdXBhdGlvbj11c2VycyRvY2N1cGF0aW9uLCBiaXJ0aGRheT11c2VycyRiaXJ0aClcbmBgYCJ9 -->
+<pre class="r"><code>colnames(users)[colnames(users) == 'id'] &lt;- 'user_id'
+users[, 7:9][users[,7:9]==0] &lt;- NA
+users[, 10:20][users[,10:20]==&quot;&quot;] &lt;- NA
+userInfo &lt;- dplyr::tibble(id=users$user_id, height=users$height, weight=users$weight, city=users$city, country=users$country, year_started=users$started, occupation=users$occupation, birthday=users$birth)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Finally we are going to graph the number of new climbers per year and the number of injuries per year to see if there is a relationship.</p>
+<p>Next Looking at the ascent table A lot of data in this table is specific to what we are deciding to look at. We will need to clean a lot of this data.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5qdXJ5X3Bsb3QgPC0gZ2dwbG90KGluanVyaWVzLCBhZXMoeD15ZWFyKSkgKyBnZW9tX3BvaW50KGFlcyh5PW51bV9uZXdfY2xpbWJlcnMsIGNvbG91ciA9J2JsdWUnKSkgK1xuICAgIGdlb21fcG9pbnQoYWVzKHk9bnVtX29mX2FjY2lkZW50cywgY29sb3VyID0ncmVkJykpICsgeWxhYihcIk51bWJlciBvZiBDbGltYmVyc1wiKSArIHhsYWIoXCJZZWFyXCIpICsgICAgc2NhbGVfY29sb3JfbWFudWFsKGxhYmVscyA9IGMoXCIjIG9mIE5ldyBDbGltYmVyc1wiLCBcIiMgb2YgQWNjaWRlbnRzXCIpLCB2YWx1ZXMgPSBjKFwiYmx1ZVwiLCBcInJlZFwiKSlcblxuaW5qdXJ5X3Bsb3RcbmBgYCJ9 -->
-<pre class="r"><code>injury_plot &lt;- ggplot(injuries, aes(x=year)) + geom_point(aes(y=num_new_climbers, colour ='blue')) +
-    geom_point(aes(y=num_of_accidents, colour ='red')) + ylab(&quot;Number of Climbers&quot;) + xlab(&quot;Year&quot;) +    scale_color_manual(labels = c(&quot;# of New Climbers&quot;, &quot;# of Accidents&quot;), values = c(&quot;blue&quot;, &quot;red&quot;))
-
-injury_plot</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGltKGFzY2VudHMpXG5jb2xuYW1lcyhhc2NlbnRzKVxuYGBgIn0= -->
+<pre class="r"><code>dim(ascents)
+colnames(ascents)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>This code is to replace empty values with NA in certain rows and to remove other rows from the data frame that we wont be using</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYXNjZW50c1ssIDRdW2FzY2VudHNbLDRdPT1cIlwiXSA8LSBOQVxuYXNjZW50c1ssIDE0XVthc2NlbnRzWywxNF09PVwiXCJdIDwtIE5BXG5hc2NlbnRzWywgMTVdW2FzY2VudHNbLDE1XT09MF0gPC0gTkFcbmFzY2VudHNbLCAxNl1bYXNjZW50c1ssMTZdPT1cIlwiXSA8LSBOQVxuYXNjZW50c1ssIDE3XVthc2NlbnRzWywxN109PTBdIDwtIE5BXG5hc2NlbnRzWywgMThdW2FzY2VudHNbLDE4XT09XCJcIl0gPC0gTkFcbmFzY2VudHNbLCAxOV1bYXNjZW50c1ssMTldPT1cIlwiXSA8LSBOQVxuYXNjZW50c1ssIDIwXVthc2NlbnRzWywyMF09PVwiXFxuXCJdIDwtIE5BXG5hc2NlbnRzJHJhd19ub3RlcyA8LSBOVUxMXG5gYGAifQ== -->
+<pre class="r"><code>ascents[, 4][ascents[,4]==&quot;&quot;] &lt;- NA
+ascents[, 14][ascents[,14]==&quot;&quot;] &lt;- NA
+ascents[, 15][ascents[,15]==0] &lt;- NA
+ascents[, 16][ascents[,16]==&quot;&quot;] &lt;- NA
+ascents[, 17][ascents[,17]==0] &lt;- NA
+ascents[, 18][ascents[,18]==&quot;&quot;] &lt;- NA
+ascents[, 19][ascents[,19]==&quot;&quot;] &lt;- NA
+ascents[, 20][ascents[,20]==&quot;\n&quot;] &lt;- NA
+ascents$raw_notes &lt;- NULL</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>##Next Looking at the grades table The grades table holds information used to convert between the differnet climbing systems. There are 4 main climbing rating systems.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGltKGdyYWRlcylcbmNvbG5hbWVzKGdyYWRlcylcbmBgYCJ9 -->
+<pre class="r"><code>dim(grades)
+colnames(grades)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ3JhZGVzWywgMToxNF1bZ3JhZGVzWywxOjE0XT09MF0gPC0gTkFcbmBgYCJ9 -->
+<pre class="r"><code>grades[, 1:14][grades[,1:14]==0] &lt;- NA</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Time to clean the last table the method table The method table holds information on the method of climbing done. In climbing there are different style of climbing based on certain aspects such as if you have climbed a route before. This table helps us assign a type to each climb that is logged.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGltKG1ldGhvZHMpXG5jb2xuYW1lcyhtZXRob2RzKVxuYGBgIn0= -->
+<pre class="r"><code>dim(methods)
+colnames(methods)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWV0aG9kcyRuYW1lIDwtIGFzLmZhY3RvcihtZXRob2RzJG5hbWUpXG5sZXZlbHMobWV0aG9kcyRuYW1lKVxuYGBgIn0= -->
+<pre class="r"><code>methods$name &lt;- as.factor(methods$name)
+levels(methods$name)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Early Exploration</p>
+<p>The ascents table has a lot of logged climbs in it. Lets look at this data Plot number of climbs logged at each different grade as a bar chart</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdCA8LSBnZ3Bsb3QoYXNjZW50cywgYWVzKHg9Z3JhZGVfaWQpKSArIGdlb21fYmFyKCkgKyB4bGFiKFwiR3JhZGVcIikgKyB5bGFiKFwiTnVtYmVyIG9mIExvZ2dlZCBDbGltYnNcIilcbnBsb3RcbmBgYCJ9 -->
+<pre class="r"><code>plot &lt;- ggplot(ascents, aes(x=grade_id)) + geom_bar() + xlab(&quot;Grade&quot;) + ylab(&quot;Number of Logged Climbs&quot;)
+plot</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Look at the hardest climb each user has done and the year they started climbing</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGFyZGVzdENsaW1iIDwtIGFzY2VudHMgJT4lIGdyb3VwX2J5KHVzZXJfaWQpICU+JSBmaWx0ZXIoZ3JhZGVfaWQgPT0gbWF4KGdyYWRlX2lkKSlcbmhhcmRlc3RXaXRoWWVhciA8LSBtZXJnZShoYXJkZXN0Q2xpbWIsdXNlcnMsIGJ5PVwidXNlcl9pZFwiKVxuc3RhcnRQbG90IDwtIGdncGxvdChoYXJkZXN0V2l0aFllYXIsIGFlcyh4PXN0YXJ0ZWQseT1ncmFkZV9pZCkpICsgZ2VvbV9wb2ludCgpICsgIHhsaW0oMTk1MCwgMjAxOSkgKyB4bGFiKFwiWWVhciBTdGFydGVkIENsaW1iaW5nXCIpICsgeWxhYihcIkhpZ2hlc3QgR3JhZGUgQ2xpbWJlZFwiKVxuc3RhcnRQbG90XG5gYGAifQ== -->
+<pre class="r"><code>hardestClimb &lt;- ascents %&gt;% group_by(user_id) %&gt;% filter(grade_id == max(grade_id))
+hardestWithYear &lt;- merge(hardestClimb,users, by=&quot;user_id&quot;)
+startPlot &lt;- ggplot(hardestWithYear, aes(x=started,y=grade_id)) + geom_point() +  xlim(1950, 2019) + xlab(&quot;Year Started Climbing&quot;) + ylab(&quot;Highest Grade Climbed&quot;)
+startPlot</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now lets look at the number of users from each of the top 10 countries</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudXNlcnNQZXJDb3VudHJ5IDwtIGNvdW50KHVzZXJzLCBjb3VudHJ5KVxudXNlcnNQZXJDb3VudHJ5IDwtIHVzZXJzUGVyQ291bnRyeVtvcmRlcih1c2Vyc1BlckNvdW50cnkkbiwgZGVjcmVhc2luZyA9IFRSVUUpLF1cbnVzZXJzUGVyQ291bnRyeSRjb3VudHJ5IDwtIGZhY3Rvcih1c2Vyc1BlckNvdW50cnkkY291bnRyeSwgbGV2ZWxzID0gdXNlcnNQZXJDb3VudHJ5JGNvdW50cnkpXG51c2Vyc1BlckNvdW50cnkgPC0gaGVhZCh1c2Vyc1BlckNvdW50cnksIDEwKVxucGxvdFAgPC0gZ2dwbG90KHVzZXJzUGVyQ291bnRyeSwgYWVzKGNvdW50cnksIG4pKSArIGdlb21fY29sKCkgKyB5bGFiKFwiTnVtYmVyIG9mIFVzZXJzXCIpICsgeGxhYihcIkNvdW50cnlcIilcbnBsb3RQXG5gYGAifQ== -->
+<pre class="r"><code>usersPerCountry &lt;- count(users, country)
+usersPerCountry &lt;- usersPerCountry[order(usersPerCountry$n, decreasing = TRUE),]
+usersPerCountry$country &lt;- factor(usersPerCountry$country, levels = usersPerCountry$country)
+usersPerCountry &lt;- head(usersPerCountry, 10)
+plotP &lt;- ggplot(usersPerCountry, aes(country, n)) + geom_col() + ylab(&quot;Number of Users&quot;) + xlab(&quot;Country&quot;)
+plotP</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Finally some things I would like to look into are things like the relationship between size and climbing ability, the relationship between location and climbing ability.</p>
+<!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ2xpbWJpbmcgSW5zaWdodHMiCmF1dGhvcjogIklhbiBNY0RvbmFsZCIKb3V0cHV0OgogIHBkZl9kb2N1bWVudDogZGVmYXVsdAogIGh0bWxfbm90ZWJvb2s6IGRlZmF1bHQKICBodG1sX2RvY3VtZW50OgogICAgZGZfcHJpbnQ6IHBhZ2VkCi0tLQoKTG9hZCBsaWJyYXJpZXMgdGhhdCB3aWxsIGJlIG5lZWRlZCBpbiB0aGlzIGZpbGUuCmBgYHtyIG9uZX0KbGlicmFyeSgia25pdHIiKQpsaWJyYXJ5KCJjYXJldCIpCmBgYAoKQWRkIHBlcnZpb3VzbHkgZG9uZSB3b3JrIGZyb20gdGhlIGluZGV4LlJtZCBmaWxlCmBgYHtyIHR3b30KcHVybCgicGFydDEuUm1kIiwgb3V0cHV0ID0gInBhcnQxLnIiKQpzb3VyY2UoInBhcnQxLnIiKQpgYGAKCk9uZSBvZiB0aGUgdGhpbmdzIEkgd291bGQgbGlrZSB0byBtb2RlbCBpcyBpbmZvcm1hdGlvbiBhYm91dCBpbmRpdmlkdWFsIHVzZXJzIGFuZCB0aGVpciBoYXJkZXN0IGNsaW1icy4KSW4gY2xpbWJpbmcgdGhlcmUgYXJlIG1hbnkgZmFjdG9ycyB0aGF0IGNsaW1iZXJzIG1heSB0aGluayBpbmZsdWVuY2UgdGhlIGhhcmRlc3QgdGhleSBjYW4gY2xpbWIuCk9mdGVuIHNvbWUgb2YgdGhlIGZhY3RvcnMgdGhhdCBhcmUgdGhvdWdodCBvZiBhcmUgcGh5c2ljYWwgZmFjdG9ycyBzdWNoIGFzIGhlaWdodCwgd2VpZ2h0IGFuZCBzZXguIApTb21lIG9mIHRoZSBvdGhlciBmYWN0b3JzIHRoYXQgY29tZSBpbnRvIHBsYXkgYXJlIG1vcmUgc3BlY2lmaWMgdG8gdGhlIGNsaW1iIGFuZCB3ZSBjYW50IGFuYWx5emUgdGhlbS4gSG93ZXZlciBvbmUgb2YgdGhlc2UgZmFjdG9ycyB3ZSBjYW4gZXhhbWluZSBpcyB0aGUgdGltZSBzaW5jZSBhIGNsaW1iZXIgc3RhcnRlZCBjbGltYmluZy4gVXNpbmcgdGhlc2UgZmFjdG9ycyB3ZSBjYW4gaG9wZWZ1bGx5IG1ha2UgYSBtb2RlbCB0byBkZXRlcm1pbmUgYSBwZXJzb25zIGhhcmRlc3QgY2xpbWIgYWNjdXJhdGVseS4KTXkgZ29hbCBpcyB0byBmaW5kIG91dCB3aGF0IHRoaW5ncyBjYW4gcHJlZGljdCBhIHVzZXJzIGhhcmRlc3QgY2xpbWIuCgpGaXJzdCB3ZSB3aWxsIGJlIGNyZWF0aW5nIGEgZGF0YXNldCB0byB0cmFpbiBhIG1vZGVsIGFuZCBjb21wYXJlIHJlc3VsdHMuIFRoaXMgY29kZSB3aWxsIGNyZWF0ZSBhIGxpc3Qgb2YgdGhlIGNvbHVtbiBuYW1lcyB3ZSB3aXNoIHRvIGtlZXAgZnJvbSBvdXIgbGFyZ2UgZGF0YSBzZXQgdGhhdCBob2xkcyBvdXIgaW5mbyBhYm91dCBjbGltYmVycyBhbmQgdGhlaXIgaGFyZGVzdCBjbGltYnMuIEFmdGVyIHdlIGhhdmUgdGhpcyBsaXN0IHdlIGtlZXAgb25seSB0aG9zZSBjb2x1bW5zIGFuZCBjcmVhdGUgYSBuZXcgZGF0YWZyYW1lLiBGaW5hbGx5IHdlIG9taXQgYW55IHJvd3MgaW4gdGhlIGRhdGEgdGhhdCBob2xkIGFueSBjb2x1bW5zIGNvbnRhaW5pbmcgYW4gTkEgdmFsdWUuCmBgYHtyIHRocmVlfQpteXZhcnMgPC0gYygiZ3JhZGVfaWQiLCAiaGVpZ2h0IiwgIndlaWdodCIsICJzdGFydGVkIiwgInNleCIpCmdyYWRlX21vZGVsX2RhdGEgPC0gaGFyZGVzdFdpdGhZZWFyW215dmFyc10KZ3JhZGVfbW9kZWxfZGF0YSA8LSBuYS5vbWl0KGdyYWRlX21vZGVsX2RhdGEpCmBgYAoKc3BsaXR0aW5nIHRoZSBwcmV2aW9zbHkgbWFkZSBkYXRhIGludG8gdHdvIHNldHMuIE9uZSB0byB0cmFpbiBhIG1vZGVsIGFuZCB0aGUgb3RoZXIgdG8gZGV0ZXJtaW5lIGhvdyB0aGUgbW9kZWwgY291bGQgZG8gaW4gcHJlZGljaXRpbmcgaGlnaGVzdCBncmFkZSB1c2luZyB0aGUgcmVtYWluaW5nIGRhdGEuCldlIGFyZSB1c2luZyBhIHZhbGlkYXRpb24gc2V0IGhlcmUgdG8gZXZhbHVhdGUgdGhlIG1vZGVscyBwZXJmb3JtYW5jZQpBZGRpdGlvbmFsbHkgd2Ugc2V0IHRoZSBzZWVkIHNvIHRoZSByZXN1bHRzIGFyZSByZXByb2R1Y2VhYmxlLgpgYGB7ciBmb3VyfQpzZXQuc2VlZCg5MjYpCnNhbXBsZSA8LSBzYW1wbGUuaW50KG4gPSBucm93KGdyYWRlX21vZGVsX2RhdGEpLCAKICAgICAgICAgICAgICAgICAgICAgc2l6ZSA9IGZsb29yKC45MCpucm93KGdyYWRlX21vZGVsX2RhdGEpKSwgIyBTZWxlY3RpbmcgOTAlIG9mIGRhdGEKICAgICAgICAgICAgICAgICAgICAgcmVwbGFjZSA9IEYpCgp0cmFpbl9kYXRhIDwtIGdyYWRlX21vZGVsX2RhdGFbc2FtcGxlLCBdCnRlc3RfZGF0YSAgPC0gZ3JhZGVfbW9kZWxfZGF0YVstc2FtcGxlLCBdCmBgYAoKVHJhaW4gYSBtb2RlbCB1c2luZyBvdXIgcHJldmlvdXNseSBzZXBlcmF0ZWQgdHJhaW5pbmcgZGF0YS4KVGhlIG1vZGVsIHdlIGFyZSB0cnlpbmcgdG8gdHJhaW4gd2lsbCBiZSBwcmVkaWN0aW5nIHRoZSBoaWdoZXN0IGdyYWRlIGEgY2xpbWJlciBoYXMgZXZlciBlbnRlcmVkIGFzIGNvbXBsZXRlZCBpbiB0aGUgZGF0YWJhc2UuClRvIHRyeSB0byBwcmVkaWN0IHRoaXMgZ3JhZGUgd2Ugd2lsbCBiZSB1c2luZyB0aGUgY2xpbWJlcnMgaGVpZ2h0LCB3ZWlnaHQsIHllYXIgc3RhcnRlZCwgYW5kLCBzZXguClRoZSBwYXJhbWV0ZXJzIGFuZCBvdXRwdXQgbWFrZSBzZW5zZS4gVGhlc2UgYXJlIGFsbCBmYWN0b3JzIHRoYXQgc2VlbSB0byBpbmZsdWVuY2UgY2xpbWJpbmcgYWJpbGl0eS4KU29tZSBvZiB0aGUgcG9zc2libGUgbGltaXRzIG9mIHRoaXMgbW9kZWwgYXJlIHRoZSBsYXJnZSBhbW91bnQgb2YgbWlzc2luZyBkYXRhIGluIHRoZSBpbnB1dCBkYXRhLiBUaGVyZSB3ZXJlIHRob3VzYW5kcyBvZiByb3dzIHdoZXJlIHBlb3BsZSBoYWRuJ3QgZW50ZXJlZCBvbmUgb2YgdGhlc2UgdGhpbmdzLgpgYGB7ciBmaXZlfQpncmFkZV9tb2RlbCA8LSBsbSh0cmFpbl9kYXRhLCBmb3JtdWxhID0gZ3JhZGVfaWQgfiBoZWlnaHQgKyB3ZWlnaHQgKyBzdGFydGVkICsgc2V4KQpzdW1tYXJ5KGdyYWRlX21vZGVsKQpgYGAKTG9va2luZyBhdCB0aGUgc3VtbWFyeSBvZiB0aGlzIG1vZGVsIHdlIGNhbiBzZWUgdGhhdCBub3QgYWxsIGZhY3RvcnMgd2UgcHJlZGljdGVkIHdlcmUgYXMgaW1wb3J0YW50IGFzIHRoZSByZXN0LiBIZWlnaHQgaGFkIGxpdHRsZSBzdGF0aXN0aWNhbCBzaWduaWZpY2FuY2UgdG8gdGhlIGhhcmRlc3QgZ3JhZGUgc29tZW9uZSBjb3VsZCBjbGltYi4gSG93ZXZlciB0aGUgb3RoZXIgdGhyZWUgZmFjdG9ycyB3ZXJlIHNpZ25pZmFjbnQgYW5kIGFsbCBlcXVhbGx5IGltcG9ydGFudCB0byBwcmVkaWN0IHRoZSBoYXJkZXN0IGNsaW1iLgoKTm93IHdlIGFyZSBnb2luZyB0byBsb29rIGF0IGFub3RoZXIgc291cmNlIG9mIGRhdGEuIFRoaXMgZGF0YSB3YXMgZnJvbSB0aGUgQW1lcmljYW4gQWxwaW5lIENsdWIgaW4gMjAxNCBhbmQgc2hvd3MgdGhlIG51bWJlciBvZiBhY2NpZWRlbnRzIHJlcG9ydGVkIGluIHRoZSBtb3VudGFpbnMgZHVyaW5nIGFjdGl2aXRlcyBsaWtlIGNsaW1iaW5nIGFuZCBtb3V0YWluZXJpbmcuCldlIGFyZSBnb2luZyB0byBsb2FkIHRoaXMgZGF0YSBmcm9tIGEgY3N2IGZpbGUuCmBgYHtyIHNldmVufQppbmp1cmllcyA9IHJlYWQuY3N2KCJjbGltYkluanVyaWVzLmNzdiIsIGhlYWRlciA9IFRSVUUpCmBgYAoKT25lIG9mIHRoZSB0aGluZ3MgSSBhbSBpbnRlcmVzdGVkIGluIHNlZWluZyBpZiB0aGVyZSBpcyBhbnkgcmVsYWlvbnNoaXAgYmV0d2VlbiB0aGUgbnVtYmVyIG9mIGNsaW1iZXJzIHdobyBzdGFydGVkIGluIGEgeWVhciBhbmQgdGhlIG51bWJlciBvZiBhY2NpZGVudHMuIE15IGdvYWwgaGVyZSBpcyBzZWUgaWYgdGhlcmUgaXMgc29tZSBwb3RlbnRpYWwgbGluayBiZXR3ZWVuIHRoZSB0aGUgbnVtYmVyIG9mIG5ldyBjbGltYmVycyBhbmQgdGhlIG51bWJlciBvZiBpbmp1cmllcyBpbiBhIGdpdmVuIHllYXIuIEhlcmUgd2UgYXJlIGdvaW5nIHRvIGNsZWFuIHRoZSBkYXRhLiBGaXJzdCB3ZSBuZWVkIHRvIGdlbmVyYXRlIHNvbWUgZGF0YSBieSBjb3VudGluZyB0aGUgbnVtYmVyIG9mIHVzZXJzIHdobyBzdGFydGVkIGluIGVhY2ggZ2l2ZW4geWVhci4gVGhlbiB3ZSBhcmUgZ29pbmcgdG8gcmVtb3ZlIGFueSB5ZWFycyBub3QgaW4gb3VyIG5ldyBkYXRhIHNldC4gT3VyIG5ldyBkYXRhIHNldCBpcyBhbHJlYWQgY2xlYW4gYW5kIGlzIHJlYWR5IHRvIGJlIG1lcmdlIHdpdGggdGhlIGRhdGEgd2UgYXJlIGdlbmVyYXRpbmcgYmVsb3cgYmVmb3JlIHdlIGJlZ2luIHRvIHBsb3QgaXQuCmBgYHtyIGVpZ2h0fQpuZXdfcGVyX3llYXIgPC0gY291bnQodXNlckluZm8sIHllYXJfc3RhcnRlZCkKY29sbmFtZXMobmV3X3Blcl95ZWFyKVtjb2xuYW1lcyhuZXdfcGVyX3llYXIpID09ICJ5ZWFyX3N0YXJ0ZWQiXSA8LSAieWVhciIKY29sbmFtZXMobmV3X3Blcl95ZWFyKVtjb2xuYW1lcyhuZXdfcGVyX3llYXIpID09ICJuIl0gPC0gIm51bV9uZXdfY2xpbWJlcnMiCm5ld19wZXJfeWVhciA8LSBuZXdfcGVyX3llYXJbIXJvd1N1bXMobmV3X3Blcl95ZWFyWzFdIDwxOTgxKSxdCm5ld19wZXJfeWVhciA8LSBuZXdfcGVyX3llYXJbIXJvd1N1bXMobmV3X3Blcl95ZWFyWzFdID4gMjAxMyksXQpuZXdfcGVyX3llYXIgPC0gbmEub21pdChuZXdfcGVyX3llYXIpCmluanVyaWVzIDwtIG1lcmdlKGluanVyaWVzLG5ld19wZXJfeWVhciwgYnk9InllYXIiKQpgYGAKCnNob3dpbmcgaW5qdXJpZXMgdGFibGUgZm9yIGRvY3VtZW50YXRpb24gcHVycG9zZQpgYGB7ciBuaW5lfQpjb2xuYW1lcyhpbmp1cmllcykKYGBgCgpGaW5hbGx5IHdlIGFyZSBnb2luZyB0byBncmFwaCB0aGUgbnVtYmVyIG9mIG5ldyBjbGltYmVycyBwZXIgeWVhciBhbmQgdGhlIG51bWJlciBvZiBpbmp1cmllcyBwZXIgeWVhciB0byBzZWUgaWYgdGhlcmUgaXMgYSByZWxhdGlvbnNoaXAuCmBgYHtyIHRlbn0KaW5qdXJ5X3Bsb3QgPC0gZ2dwbG90KGluanVyaWVzLCBhZXMoeD15ZWFyKSkgKyBnZW9tX3BvaW50KGFlcyh5PW51bV9uZXdfY2xpbWJlcnMsIGNvbG91ciA9J2JsdWUnKSkgKwogICAgZ2VvbV9wb2ludChhZXMoeT1udW1fb2ZfYWNjaWRlbnRzLCBjb2xvdXIgPSdyZWQnKSkgKyB5bGFiKCJOdW1iZXIgb2YgQ2xpbWJlcnMiKSArIHhsYWIoIlllYXIiKSArICAgIHNjYWxlX2NvbG9yX21hbnVhbChsYWJlbHMgPSBjKCIjIG9mIE5ldyBDbGltYmVycyIsICIjIG9mIEFjY2lkZW50cyIpLCB2YWx1ZXMgPSBjKCJibHVlIiwgInJlZCIpKQoKaW5qdXJ5X3Bsb3QKYGBg</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiQ2xpbWJpbmcgSW5zaWdodHMiCmF1dGhvcjogIklhbiBNY0RvbmFsZCIKb3V0cHV0OgogIGh0bWxfZG9jdW1lbnQ6CiAgICBkZl9wcmludDogcGFnZWQKICBodG1sX25vdGVib29rOiBkZWZhdWx0CiAgcGRmX2RvY3VtZW50OiBkZWZhdWx0Ci0tLQpJbnRybzoKCldlbGNvbWUgdG8gbXkgZGF0YSBzY2llbmNlIHByb2plY3QuIFRoZSBkYXRhIEkgY2hvc2UgdG8gZXhhbWluZSBmb3IgdGhpcyB3YXMgYSBkYXRhc2V0IHRoYXQgd2FzIHNjcmFwZWQgZnJvbSA4YS5udS4gVGhpcyBpcyBhIHBvcHVsYXIgd2Vic2l0ZSB1c2VkIGJ5IHJvY2sgY2xpbWJlcnMuIDhhLm51IG9mZmVycyBhIGZlYXR1cmUgdGhhdCBhbGxvd3MgdXNlcnMgdG8gbG9nIHRoZSBjbGltYnMgdGhhdCB0aGV5IGhhdmUgY29tcGxldGVkLiBBZGRpdGlvbmFsbHkgdGhlcmUgaXMgdXNlciBkYXRhIGluY2x1ZGVkIHRoYXQgaGFzIGluZm9ybWF0aW9uIGFib3V0IHRoZSBjbGltYmVycyB3aG8gbG9nZ2VkIHRoZXNlIGNsaW1icy4gQXMgYSByb2NrIGNsaW1iZXIgbXlzZWxmLCB0aGlzIGRhdGEgaW50ZXJlc3RlZCBtZSBhcyBJIGhvcGVkIHRvIGxlYXJuIGEgbGl0dGxlIGJpdCBtb3JlIGFib3V0IGNsaW1iZXJzLCBidXQgYWxzbyBsZWFybiBtb3JlIGFib3V0IGNsaW1iaW5nIGFyZWFzIGFuZCBpbmRpdmlkdWFsIGNsaW1icy4KClNldHVwCgpsb2FkaW5nIGxpYnJhcmllcyB0aGF0IHdlIHVzZWQKYGBge3IgYX0KbGlicmFyeSgidGlkeXZlcnNlIikKbGlicmFyeSgiUlNRTGl0ZSIpCmxpYnJhcnkoImdncGxvdDIiKQpsaWJyYXJ5KCJSQ29sb3JCcmV3ZXIiKQpgYGAKCkNyZWF0aW5nIGEgY29ubmVjdGlvbiB0byB0aGUgZGF0YWJhc2Ugd2Ugd2lsbCBiZSB1c2luZy4gVGhpcyBkYXRhYmFzZSBob3VzZXMgYWxsIG9mIHRoZSB1c2VyIGVudGVyZWQgZGF0YSB0aGUgd2FzIHRha2VuIGZyb20gOGEubnUgVGhpcyBkYXRhIGlzIGFsbCBzZWxmIHJlcG9ydGVkIGRhdGEuIER1ZSB0byB0aGlzIHRoZXJlIHdpbGwgYmUgc29tZSBsZXZlbCBvZiBpbmFjY3VyYWN5IGFuZCBwb3RlbnRpYWxseSB3cm9uZyBkYXRhIHRoYXQgdXNlcnMgaGF2ZSBlbnRlcmVkLiBUaGlzIHdpbGwgY2F1c2UgdGhlcmUgdG8gYmUgbG90cyBvZiBvdXRsaWVycyBpbiBzb21lIG9mIHRoZSBkYXRhLgoKRG93bmxvYWQgZGF0YSBmcm9tIGh0dHBzOi8vd3d3LmthZ2dsZS5jb20vZGNvaGVuMjEvOGFudS1jbGltYmluZy1sb2dib29rZwpgYGB7ciB4fQpjb24gPC0gZGJDb25uZWN0KFJTUUxpdGU6OlNRTGl0ZSgpLCAiZGF0YWJhc2Uuc3FsaXRlIikKZGJMaXN0VGFibGVzKGNvbikKYGBgCgpHYXRoZXIgQWxsIERhdGEKV2UgYXJlIGZpcnN0IGdvaW5nIHRvIGdyYWIgYWxsIGRhdGEgZnJvbSBlYWNoIHRhYmxlIGFuZCBzdG9yZSB0aGVtIGluIGEgZGF0YWZyYW1lLgpSaWdodCBub3cgb3VyIGRhdGEgaXMgaW4gdGhlIGZvcm0gb2YgNCB0YWJsZXMgc3RvcmUgaW4gYW4gc3FsaXRlIGRhdGFiYXNlLiBXZSB3aWxsIGJlIHNlbmRpbmcgYSBxdWVyeSB0byB0aGlzIGRhdGFiYXNlIGFza2luZyBmb3IgZWFjaCB0YWJsZSBvbmUgYnkgb25lIGFuZCBjcmVhdGluZyBkYXRhZnJhbWVzIGZyb20gdGhlc2UgcmVzdWx0cy4KVGhlIGFzY2VudHMgdGFibGUgaGFzIGVhY2ggcmVjb3JkZWQgYXNjZW50IGZyb20gZGlmZmVyZW50IHVzZXJzLgpUaGUgZ3JhZGVzIHRhYmxlIGhhcyBhIGNoYXJ0IHRvIGNvbnZlcnQgdGhlIGdyYWRlcyBvZiBjbGltYnMgdG8gdGhlIGRpZmZlcmVudCBncmFkaW5nIHN5c3RlbXMgdXNlZCBieSBwZW9wbGUgaW4gZGlmZmVybmV0IHBhcnRzIG9mIHRoZSB3b3JsZC4KVGhlIG1ldGhvZHMgdGFibGUgaG9sZHMgYSBrZXkgdG8gbG9vayBhdCBkaWZmZXJlbnQgbWV0aG9kcyBvZiBjbGltYmluZyBzdWNoIGFzIHRyYWQsIHNwb3J0LCBvciBib3VsZGVyaW5nLgpGaW5hbGx5IHRoZSB1c2VycyB0YWJsZSBob2xkcyBpbmZvcm1hdGlvbiBhYm91dCBkaWZmZXJlbnQgdXNlcnMuCmBgYHtyIGJ9Cgphc2NlbnRzIDwtIGRiR2V0UXVlcnkoY29uLCAiU0VMRUNUICogRlJPTSBBU0NFTlQ7IikKZ3JhZGVzIDwtIGRiR2V0UXVlcnkoY29uLCAiU0VMRUNUICogRlJPTSBHUkFERSIpOwptZXRob2RzIDwtIGRiR2V0UXVlcnkoY29uLCAiU0VMRUNUICogRlJPTSBNRVRIT0Q7IikKdXNlcnMgPC0gZGJHZXRRdWVyeShjb24sICJTRUxFQ1QgKiBGUk9NIFVTRVI7IikKCmBgYAoKVGltZSB0byBDbGVhbiBhbmQgVGlkeSBEYXRhCgpGaXJzdCBsZXRzIGxvb2sgYXQgdGhlIFVzZXJzIERhdGFmcmFtZSB3ZSBjcmVhdGVkLgpgYGB7ciBjfQpkaW0odXNlcnMpCmNvbG5hbWVzKHVzZXJzKQpgYGAKQ2xlYW5pbmcgdXNlciBkYXRhZnJhbWUuCkZpcnN0IHdlIHRha2UgYWxsIHZhbHVlcyBpbiB0aGUgaGVpZ2h0IGFuZCB3ZWlnaHQgYW5kIHN0YXJ0ZWQgY29sdW1ucyBhbmQgcmVwbGFjZSB0aGVtIHdpdGggTi9BIHZhbHVlClRoZW4gd2UgbmVlZCB0byB0YWtlIGFsbCBlbXB0eSB2YWx1cyBpbiB0aGUgcmVtYWluaW5nIHRhYmxlcyBzdHJpbmcgZmllbGRzIGFuZCByZXBsYWNlIGVtcHR5IHN0cmluZ3Mgd2l0aCBuYSB2YWx1ZXMKCkZpbmFsbHkgd2UgY3JlYXRlIGEgdGliYmxlIHRoYXQgd2lsbCBoYXZlIHRoZSBkYXRhIHdlIGFyZSBnb2luZyB0byBiZSBtb3N0IGludGVyZXN0ZWQgaW4gZnJvbSB0aGlzIHRhYmxlLgpgYGB7ciBkfQpjb2xuYW1lcyh1c2VycylbY29sbmFtZXModXNlcnMpID09ICdpZCddIDwtICd1c2VyX2lkJwp1c2Vyc1ssIDc6OV1bdXNlcnNbLDc6OV09PTBdIDwtIE5BCnVzZXJzWywgMTA6MjBdW3VzZXJzWywxMDoyMF09PSIiXSA8LSBOQQp1c2VySW5mbyA8LSBkcGx5cjo6dGliYmxlKGlkPXVzZXJzJHVzZXJfaWQsIGhlaWdodD11c2VycyRoZWlnaHQsIHdlaWdodD11c2VycyR3ZWlnaHQsIGNpdHk9dXNlcnMkY2l0eSwgY291bnRyeT11c2VycyRjb3VudHJ5LCB5ZWFyX3N0YXJ0ZWQ9dXNlcnMkc3RhcnRlZCwgb2NjdXBhdGlvbj11c2VycyRvY2N1cGF0aW9uLCBiaXJ0aGRheT11c2VycyRiaXJ0aCkKYGBgCgpOZXh0IExvb2tpbmcgYXQgdGhlIGFzY2VudCB0YWJsZQpBIGxvdCBvZiBkYXRhIGluIHRoaXMgdGFibGUgaXMgc3BlY2lmaWMgdG8gd2hhdCB3ZSBhcmUgZGVjaWRpbmcgdG8gbG9vayBhdC4gV2Ugd2lsbCBuZWVkIHRvIGNsZWFuIGEgbG90IG9mIHRoaXMgZGF0YS4KYGBge3IgZGR9CmRpbShhc2NlbnRzKQpjb2xuYW1lcyhhc2NlbnRzKQpgYGAKClRoaXMgY29kZSBpcyB0byByZXBsYWNlIGVtcHR5IHZhbHVlcyB3aXRoIE5BIGluIGNlcnRhaW4gcm93cyBhbmQgdG8gcmVtb3ZlIG90aGVyIHJvd3MgZnJvbSB0aGUgZGF0YSBmcmFtZSB0aGF0IHdlIHdvbnQgYmUgdXNpbmcKYGBge3IgZGRxfQphc2NlbnRzWywgNF1bYXNjZW50c1ssNF09PSIiXSA8LSBOQQphc2NlbnRzWywgMTRdW2FzY2VudHNbLDE0XT09IiJdIDwtIE5BCmFzY2VudHNbLCAxNV1bYXNjZW50c1ssMTVdPT0wXSA8LSBOQQphc2NlbnRzWywgMTZdW2FzY2VudHNbLDE2XT09IiJdIDwtIE5BCmFzY2VudHNbLCAxN11bYXNjZW50c1ssMTddPT0wXSA8LSBOQQphc2NlbnRzWywgMThdW2FzY2VudHNbLDE4XT09IiJdIDwtIE5BCmFzY2VudHNbLCAxOV1bYXNjZW50c1ssMTldPT0iIl0gPC0gTkEKYXNjZW50c1ssIDIwXVthc2NlbnRzWywyMF09PSJcbiJdIDwtIE5BCmFzY2VudHMkcmF3X25vdGVzIDwtIE5VTEwKYGBgCgojI05leHQgTG9va2luZyBhdCB0aGUgZ3JhZGVzIHRhYmxlClRoZSBncmFkZXMgdGFibGUgaG9sZHMgaW5mb3JtYXRpb24gdXNlZCB0byBjb252ZXJ0IGJldHdlZW4gdGhlIGRpZmZlcm5ldCBjbGltYmluZyBzeXN0ZW1zLiBUaGVyZSBhcmUgNCBtYWluIGNsaW1iaW5nIHJhdGluZyBzeXN0ZW1zLgpgYGB7ciBkZHh9CmRpbShncmFkZXMpCmNvbG5hbWVzKGdyYWRlcykKYGBgCgpgYGB7ciBkZGFhfQpncmFkZXNbLCAxOjE0XVtncmFkZXNbLDE6MTRdPT0wXSA8LSBOQQpgYGAKClRpbWUgdG8gY2xlYW4gdGhlIGxhc3QgdGFibGUgdGhlIG1ldGhvZCB0YWJsZQpUaGUgbWV0aG9kIHRhYmxlIGhvbGRzIGluZm9ybWF0aW9uIG9uIHRoZSBtZXRob2Qgb2YgY2xpbWJpbmcgZG9uZS4KSW4gY2xpbWJpbmcgdGhlcmUgYXJlIGRpZmZlcmVudCBzdHlsZSBvZiBjbGltYmluZyBiYXNlZCBvbiBjZXJ0YWluIGFzcGVjdHMgc3VjaCBhcyBpZiB5b3UgaGF2ZSBjbGltYmVkIGEgcm91dGUgYmVmb3JlLiBUaGlzIHRhYmxlIGhlbHBzIHVzIGFzc2lnbiBhIHR5cGUgdG8gZWFjaCBjbGltYiB0aGF0IGlzIGxvZ2dlZC4KYGBge3IgZGRkYX0KZGltKG1ldGhvZHMpCmNvbG5hbWVzKG1ldGhvZHMpCmBgYAoKYGBge3IgeHF9Cm1ldGhvZHMkbmFtZSA8LSBhcy5mYWN0b3IobWV0aG9kcyRuYW1lKQpsZXZlbHMobWV0aG9kcyRuYW1lKQpgYGAKCkVhcmx5IEV4cGxvcmF0aW9uCgpUaGUgYXNjZW50cyB0YWJsZSBoYXMgYSBsb3Qgb2YgbG9nZ2VkIGNsaW1icyBpbiBpdC4gTGV0cyBsb29rIGF0IHRoaXMgZGF0YQpQbG90IG51bWJlciBvZiBjbGltYnMgbG9nZ2VkIGF0IGVhY2ggZGlmZmVyZW50IGdyYWRlIGFzIGEgYmFyIGNoYXJ0CmBgYHtyIHFzfQpwbG90IDwtIGdncGxvdChhc2NlbnRzLCBhZXMoeD1ncmFkZV9pZCkpICsgZ2VvbV9iYXIoKSArIHhsYWIoIkdyYWRlIikgKyB5bGFiKCJOdW1iZXIgb2YgTG9nZ2VkIENsaW1icyIpCnBsb3QKYGBgCgpMb29rIGF0IHRoZSBoYXJkZXN0IGNsaW1iIGVhY2ggdXNlciBoYXMgZG9uZSBhbmQgdGhlIHllYXIgdGhleSBzdGFydGVkIGNsaW1iaW5nCmBgYHtyIHFzc30KaGFyZGVzdENsaW1iIDwtIGFzY2VudHMgJT4lIGdyb3VwX2J5KHVzZXJfaWQpICU+JSBmaWx0ZXIoZ3JhZGVfaWQgPT0gbWF4KGdyYWRlX2lkKSkKaGFyZGVzdFdpdGhZZWFyIDwtIG1lcmdlKGhhcmRlc3RDbGltYix1c2VycywgYnk9InVzZXJfaWQiKQpzdGFydFBsb3QgPC0gZ2dwbG90KGhhcmRlc3RXaXRoWWVhciwgYWVzKHg9c3RhcnRlZCx5PWdyYWRlX2lkKSkgKyBnZW9tX3BvaW50KCkgKyAgeGxpbSgxOTUwLCAyMDE5KSArIHhsYWIoIlllYXIgU3RhcnRlZCBDbGltYmluZyIpICsgeWxhYigiSGlnaGVzdCBHcmFkZSBDbGltYmVkIikKc3RhcnRQbG90CmBgYAoKTm93IGxldHMgbG9vayBhdCB0aGUgbnVtYmVyIG9mIHVzZXJzIGZyb20gZWFjaCBvZiB0aGUgdG9wIDEwIGNvdW50cmllcwpgYGB7ciBxcXFxcXF9CnVzZXJzUGVyQ291bnRyeSA8LSBjb3VudCh1c2VycywgY291bnRyeSkKdXNlcnNQZXJDb3VudHJ5IDwtIHVzZXJzUGVyQ291bnRyeVtvcmRlcih1c2Vyc1BlckNvdW50cnkkbiwgZGVjcmVhc2luZyA9IFRSVUUpLF0KdXNlcnNQZXJDb3VudHJ5JGNvdW50cnkgPC0gZmFjdG9yKHVzZXJzUGVyQ291bnRyeSRjb3VudHJ5LCBsZXZlbHMgPSB1c2Vyc1BlckNvdW50cnkkY291bnRyeSkKdXNlcnNQZXJDb3VudHJ5IDwtIGhlYWQodXNlcnNQZXJDb3VudHJ5LCAxMCkKcGxvdFAgPC0gZ2dwbG90KHVzZXJzUGVyQ291bnRyeSwgYWVzKGNvdW50cnksIG4pKSArIGdlb21fY29sKCkgKyB5bGFiKCJOdW1iZXIgb2YgVXNlcnMiKSArIHhsYWIoIkNvdW50cnkiKQpwbG90UApgYGAKCgpGaW5hbGx5IHNvbWUgdGhpbmdzIEkgd291bGQgbGlrZSB0byBsb29rIGludG8gYXJlIHRoaW5ncyBsaWtlIHRoZSByZWxhdGlvbnNoaXAgYmV0d2VlbiBzaXplIGFuZCBjbGltYmluZyBhYmlsaXR5LCB0aGUgcmVsYXRpb25zaGlwIGJldHdlZW4gbG9jYXRpb24gYW5kIGNsaW1iaW5nIGFiaWxpdHkuICA=</div>
 
 
 
@@ -2003,7 +1952,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("part2.Rmd");
+  window.initializeSourceEmbed("part1.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

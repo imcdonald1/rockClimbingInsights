@@ -55,6 +55,8 @@ Some of the possible limits of this model are the large amount of missing data i
 grade_model <- lm(train_data, formula = grade_id ~ height + weight + started + sex)
 summary(grade_model)
 ```
+Looking at the summary of this model we can see that not all factors we predicted were as important as the rest. Height had little statistical significance to the hardest grade someone could climb. However the other three factors were signifacnt and all equally important to predict the hardest climb.
+
 Now we are going to look at another source of data. This data was from the American Alpine Club in 2014 and shows the number of acciedents reported in the mountains during activites like climbing and moutainering.
 We are going to load this data from a csv file.
 ```{r seven}

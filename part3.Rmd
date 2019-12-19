@@ -14,7 +14,7 @@ library("knitr")
 library("caret")
 ```
 
-Add perviously done work from the musicInsights.Rmd file
+Add perviously done work from the part2.Rmd file
 ```{r}
 purl("part2.Rmd", output = "part2.r")
 source("part2.r")
@@ -26,7 +26,7 @@ After seeing that height wasnt very significant in the last sections I decided t
 new_grade_model <- lm(train_data, formula = grade_id ~ weight + started + sex)
 summary(new_grade_model)
 ```
-Now we want to validate our modelt to test the accuracy of it.
+Now we want to validate our model to test the accuracy of it.
 This test how accurate our model is using the predicted values.
 Before doing this we need to clean the data back to whole numbers since climbs are based on the numbers and cant have decimals.
 Then we use the RMSE functions to calculate our value.
@@ -39,7 +39,8 @@ grade_predictions["grade_id"] <- floor(grade_predictions["grade_id"])
 RMSE(grade_predictions, test_data$grade_id)/mean(test_data$grade_id)
 ```
 
-After exploring the results of my model it shows us that their are several factors that are very influential in predicting the highest grade someone has climbed. Some of the things that weren's very suprising were things like weight, sex, and year started climbing. Below is a visualization of some of our inital data that lead me to these conclusions. Additionally I was quite suprised to find that there was not a statistically significant relation between height and the highest grade someone has climbed.
+After exploring the results of my model it shows us that their are several factors that are very influential in predicting the highest grade someone has climbed. Some of the things that weren's very suprising were things like weight, sex, and year started climbing. Below is a visualization of some of our inital data that lead me to these conclusions. Additionally I was quite suprised to find that there was not a statistically significant relation between height and the highest grade someone has climbed. If we visualzed some of the other factors such as weight and year started I would expect to see similar graphs in which the visualizations help us see what the model shows.
+
 ```{r}
 zero_df <- hardestWithYear[which(hardestWithYear["sex"]==0),]
 one_df <- hardestWithYear[which(hardestWithYear["sex"]==1),]
@@ -52,3 +53,6 @@ avg_df <- cbind(avg_df, gender)
 f <- ggplot(avg_df, aes(gender, avg_grade)) +geom_col()
 f
 ```
+
+
+Finally when looking at operationalizing the project we must consider what it is useful for. This sort of predictor could be useful to help climbers know about where they relate to other climbers. If they are climbing a much lower grade than someone with similar stats then they might be able to infer a weakness they have and need to work on to progress much quicker. Additionally we could expand this model to predict per route. If we did something like that then climbers could use it to determine the odds they have at climbing a certain route. To further operationalize the model we would have to continue adding to its data. To do this we could continue to scrape 8a.nu for new entries as climbing is a sport that is ever evolving. Finally in its current state there are some issues that could arrise of the model socially. Climbing is a sport that has a rich history of competitors having eating disorders. It is little suprised that the model showed weight as a massive predictor. Competition climbers are usually very lean athletes who go on extremem diets to prepare for competitions. At any level of climbing the less weight you have to take up the wall the easier it will be. Having data like this know could lead to some people wanting to lose weight to climb harder and they might go about it in extreme ways. This could further increase the severity of an already problematic attitude towards climbing. Additionally this data is probably somewhat biased towards more hardcore climbers so they numbers might not be representive of all climbers. This is due to the fact that 8a.nu is a website for more serious climbers to log climbs and is not used by many newer climbers. 

@@ -14,7 +14,7 @@ Welcome to my data science project. The data I chose to examine for this was a d
 Setup
 
 loading libraries that we used
-```{r}
+```{r a}
 library("tidyverse")
 library("RSQLite")
 library("ggplot2")
@@ -36,7 +36,7 @@ The ascents table has each recorded ascent from different users.
 The grades table has a chart to convert the grades of climbs to the different grading systems used by people in differnet parts of the world.
 The methods table holds a key to look at different methods of climbing such as trad, sport, or bouldering.
 Finally the users table holds information about different users.
-```{r}
+```{r b}
 
 ascents <- dbGetQuery(con, "SELECT * FROM ASCENT;")
 grades <- dbGetQuery(con, "SELECT * FROM GRADE");
@@ -48,7 +48,7 @@ users <- dbGetQuery(con, "SELECT * FROM USER;")
 Time to Clean and Tidy Data
 
 First lets look at the Users Dataframe we created.
-```{r}
+```{r c}
 dim(users)
 colnames(users)
 ```
@@ -57,7 +57,7 @@ First we take all values in the height and weight and started columns and replac
 Then we need to take all empty valus in the remaining tables string fields and replace empty strings with na values
 
 Finally we create a tibble that will have the data we are going to be most interested in from this table.
-```{r}
+```{r d}
 colnames(users)[colnames(users) == 'id'] <- 'user_id'
 users[, 7:9][users[,7:9]==0] <- NA
 users[, 10:20][users[,10:20]==""] <- NA
@@ -66,13 +66,13 @@ userInfo <- dplyr::tibble(id=users$user_id, height=users$height, weight=users$we
 
 Next Looking at the ascent table
 A lot of data in this table is specific to what we are deciding to look at. We will need to clean a lot of this data.
-```{r}
+```{r dd}
 dim(ascents)
 colnames(ascents)
 ```
 
 This code is to replace empty values with NA in certain rows and to remove other rows from the data frame that we wont be using
-```{r}
+```{r ddq}
 ascents[, 4][ascents[,4]==""] <- NA
 ascents[, 14][ascents[,14]==""] <- NA
 ascents[, 15][ascents[,15]==0] <- NA
@@ -86,24 +86,24 @@ ascents$raw_notes <- NULL
 
 ##Next Looking at the grades table
 The grades table holds information used to convert between the differnet climbing systems. There are 4 main climbing rating systems.
-```{r}
+```{r ddx}
 dim(grades)
 colnames(grades)
 ```
 
-```{r}
+```{r ddaa}
 grades[, 1:14][grades[,1:14]==0] <- NA
 ```
 
 Time to clean the last table the method table
 The method table holds information on the method of climbing done.
 In climbing there are different style of climbing based on certain aspects such as if you have climbed a route before. This table helps us assign a type to each climb that is logged.
-```{r}
+```{r ddda}
 dim(methods)
 colnames(methods)
 ```
 
-```{r}
+```{r xq}
 methods$name <- as.factor(methods$name)
 levels(methods$name)
 ```
@@ -112,13 +112,13 @@ Early Exploration
 
 The ascents table has a lot of logged climbs in it. Lets look at this data
 Plot number of climbs logged at each different grade as a bar chart
-```{r}
+```{r qs}
 plot <- ggplot(ascents, aes(x=grade_id)) + geom_bar() + xlab("Grade") + ylab("Number of Logged Climbs")
 plot
 ```
 
 Look at the hardest climb each user has done and the year they started climbing
-```{r}
+```{r qss}
 hardestClimb <- ascents %>% group_by(user_id) %>% filter(grade_id == max(grade_id))
 hardestWithYear <- merge(hardestClimb,users, by="user_id")
 startPlot <- ggplot(hardestWithYear, aes(x=started,y=grade_id)) + geom_point() +  xlim(1950, 2019) + xlab("Year Started Climbing") + ylab("Highest Grade Climbed")
@@ -126,7 +126,7 @@ startPlot
 ```
 
 Now lets look at the number of users from each of the top 10 countries
-```{r}
+```{r qqqqqq}
 usersPerCountry <- count(users, country)
 usersPerCountry <- usersPerCountry[order(usersPerCountry$n, decreasing = TRUE),]
 usersPerCountry$country <- factor(usersPerCountry$country, levels = usersPerCountry$country)
