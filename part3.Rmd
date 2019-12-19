@@ -19,3 +19,36 @@ Add perviously done work from the musicInsights.Rmd file
 purl("part2.Rmd", output = "part2.r")
 source("part2.r")
 ```
+
+
+After seeing that height wasnt very significant in the last sections I decided to remove it from my model before trying to validate.
+```{r}
+new_grade_model <- lm(train_data, formula = grade_id ~ weight + started + sex)
+summary(new_grade_model)
+```
+Now we want to validate our modelt to test the accuracy of it.
+This test how accurate our model is using the predicted values.
+Before doing this we need to clean the data back to whole numbers since climbs are based on the numbers and cant have decimals.
+Then we use the RMSE functions to calculate our value.
+lowest test sample RMSE is the preferred model.
+```{r}
+grade_predictions <- new_grade_model %>% predict(test_data)
+grade_predictions <- as.data.frame(grade_predictions)
+colnames(grade_predictions)[colnames(grade_predictions) == "grade_predictions"] <- "grade_id"
+grade_predictions["grade_id"] <- floor(grade_predictions["grade_id"])
+RMSE(grade_predictions, test_data$grade_id)/mean(test_data$grade_id)
+```
+
+After exploring the results of my model it shows us that their are several factors that are very influential in predicting the highest grade someone has climbed. Some of the things that weren's very suprising were things like weight, sex, and year started climbing. Below is a visualization of some of our inital data that lead me to these conclusions. Additionally I was quite suprised to find that there was not a statistically significant relation between height and the highest grade someone has climbed.
+```{r}
+zero_df <- hardestWithYear[which(hardestWithYear["sex"]==0),]
+one_df <- hardestWithYear[which(hardestWithYear["sex"]==1),]
+mean(zero_df$grade_id)
+mean(one_df$grade_id)
+avg_df <- as.data.frame(c(mean(zero_df$grade_id), mean(one_df$grade_id)))
+colnames(avg_df)[colnames(avg_df) == "c(mean(zero_df$grade_id), mean(one_df$grade_id))"] <- "avg_grade"
+gender <- c("male", "female")
+avg_df <- cbind(avg_df, gender)
+f <- ggplot(avg_df, aes(gender, avg_grade)) +geom_col()
+f
+```
