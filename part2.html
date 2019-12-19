@@ -1644,68 +1644,70 @@ summary {
 library(&quot;caret&quot;)</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
-<p>Add perviously done work from the musicInsights.Rmd file</p>
-<pre class="r"><code>purl(&quot;index.Rmd&quot;, output = &quot;part1.r&quot;)</code></pre>
+<p>Add perviously done work from the index.Rmd file</p>
+<pre class="r"><code>purl(&quot;part1.Rmd&quot;, output = &quot;part1.r&quot;)</code></pre>
 <pre><code>## 
 ## 
-## processing file: index.Rmd</code></pre>
+## processing file: part1.Rmd</code></pre>
 <pre><code>## 
   |                                                                            
   |                                                                      |   0%
   |                                                                            
-  |..                                                                    |   4%
+  |..                                                                    |   3%
   |                                                                            
   |.....                                                                 |   7%
   |                                                                            
-  |........                                                              |  11%
+  |.......                                                               |  10%
   |                                                                            
   |..........                                                            |  14%
   |                                                                            
-  |............                                                          |  18%
+  |............                                                          |  17%
   |                                                                            
-  |...............                                                       |  21%
+  |..............                                                        |  21%
   |                                                                            
-  |..................                                                    |  25%
+  |.................                                                     |  24%
   |                                                                            
-  |....................                                                  |  29%
+  |...................                                                   |  28%
   |                                                                            
-  |......................                                                |  32%
+  |......................                                                |  31%
   |                                                                            
-  |.........................                                             |  36%
+  |........................                                              |  34%
   |                                                                            
-  |............................                                          |  39%
+  |...........................                                           |  38%
   |                                                                            
-  |..............................                                        |  43%
+  |.............................                                         |  41%
   |                                                                            
-  |................................                                      |  46%
+  |...............................                                       |  45%
   |                                                                            
-  |...................................                                   |  50%
+  |..................................                                    |  48%
   |                                                                            
-  |......................................                                |  54%
+  |....................................                                  |  52%
   |                                                                            
-  |........................................                              |  57%
+  |.......................................                               |  55%
   |                                                                            
-  |..........................................                            |  61%
+  |.........................................                             |  59%
   |                                                                            
-  |.............................................                         |  64%
+  |...........................................                           |  62%
   |                                                                            
-  |................................................                      |  68%
+  |..............................................                        |  66%
   |                                                                            
-  |..................................................                    |  71%
+  |................................................                      |  69%
   |                                                                            
-  |....................................................                  |  75%
+  |...................................................                   |  72%
   |                                                                            
-  |.......................................................               |  79%
+  |.....................................................                 |  76%
   |                                                                            
-  |..........................................................            |  82%
+  |........................................................              |  79%
+  |                                                                            
+  |..........................................................            |  83%
   |                                                                            
   |............................................................          |  86%
   |                                                                            
-  |..............................................................        |  89%
+  |...............................................................       |  90%
   |                                                                            
   |.................................................................     |  93%
   |                                                                            
-  |....................................................................  |  96%
+  |....................................................................  |  97%
   |                                                                            
   |......................................................................| 100%</code></pre>
 <pre><code>## output file: part1.r</code></pre>
@@ -1757,13 +1759,7 @@ summary(grade_model)</code></pre>
 ## Residual standard error: 8.702 on 34063 degrees of freedom
 ## Multiple R-squared:  0.1592, Adjusted R-squared:  0.1591 
 ## F-statistic:  1612 on 4 and 34063 DF,  p-value: &lt; 2.2e-16</code></pre>
-<p>This test how accurate our model is using the predicted values. Before doing this we need to clean the data back to whole numbers since climbs are based on the numbers and cant have decimals. Then we use the RMSE functions to calculate our value. lowest test sample RMSE is the preferred model.</p>
-<pre class="r"><code>grade_predictions &lt;- grade_model %&gt;% predict(test_data)
-grade_predictions &lt;- as.data.frame(grade_predictions)
-colnames(grade_predictions)[colnames(grade_predictions) == &quot;grade_predictions&quot;] &lt;- &quot;grade_id&quot;
-grade_predictions[&quot;grade_id&quot;] &lt;- floor(grade_predictions[&quot;grade_id&quot;])
-RMSE(grade_predictions, test_data$grade_id)/mean(test_data$grade_id)</code></pre>
-<pre><code>## [1] 0.1591043</code></pre>
+<p>Looking at the summary of this model we can see that not all factors we predicted were as important as the rest. Height had little statistical significance to the hardest grade someone could climb. However the other three factors were signifacnt and all equally important to predict the hardest climb.</p>
 <p>Now we are going to look at another source of data. This data was from the American Alpine Club in 2014 and shows the number of acciedents reported in the mountains during activites like climbing and moutainering. We are going to load this data from a csv file.</p>
 <pre class="r"><code>injuries = read.csv(&quot;climbInjuries.csv&quot;, header = TRUE)</code></pre>
 <p>One of the things I am interested in seeing if there is any relaionship between the number of climbers who started in a year and the number of accidents. My goal here is see if there is some potential link between the the number of new climbers and the number of injuries in a given year. Here we are going to clean the data. First we need to generate some data by counting the number of users who started in each given year. Then we are going to remove any years not in our new data set. Our new data set is alread clean and is ready to be merge with the data we are generating below before we begin to plot it.</p>

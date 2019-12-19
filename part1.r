@@ -79,7 +79,7 @@ startPlot <- ggplot(hardestWithYear, aes(x=started,y=grade_id)) + geom_point() +
 startPlot
 
 
-## ----qqqqqq-------------------------------------------------------------------
+## ----as1----------------------------------------------------------------------
 usersPerCountry <- count(users, country)
 usersPerCountry <- usersPerCountry[order(usersPerCountry$n, decreasing = TRUE),]
 usersPerCountry$country <- factor(usersPerCountry$country, levels = usersPerCountry$country)

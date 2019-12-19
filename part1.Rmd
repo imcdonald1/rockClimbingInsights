@@ -126,7 +126,7 @@ startPlot
 ```
 
 Now lets look at the number of users from each of the top 10 countries
-```{r qqqqqq}
+```{r as1}
 usersPerCountry <- count(users, country)
 usersPerCountry <- usersPerCountry[order(usersPerCountry$n, decreasing = TRUE),]
 usersPerCountry$country <- factor(usersPerCountry$country, levels = usersPerCountry$country)
@@ -135,5 +135,7 @@ plotP <- ggplot(usersPerCountry, aes(country, n)) + geom_col() + ylab("Number of
 plotP
 ```
 
-
-Finally some things I would like to look into are things like the relationship between size and climbing ability, the relationship between location and climbing ability.  
+Research Questions:
+Finally some things I would like to look into are things like the relationship between size and climbing ability.
+It is often thought that height and weight are major factors in ones climbing ability and from personal experience this can be true. However often people use height as an excuse so I would like to look into how true this is.
+Finally I would also like to look into how experience can effect hardest grade climbed. This is an important factor that often can't be gained quickly as climbing hard outdoors requires knowledge and experience, so I would expect it to play a major role and would like to investigate things more. 
