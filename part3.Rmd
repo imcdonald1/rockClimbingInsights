@@ -2,10 +2,10 @@
 title: "Climbing Insights"
 author: "Ian McDonald"
 output:
+  pdf_document: default
+  html_notebook: default
   html_document:
     df_print: paged
-  html_notebook: default
-  pdf_document: default
 ---
 
 Load libraries that will be needed in this file.
@@ -55,4 +55,4 @@ f
 ```
 
 
-Finally when looking at operationalizing the project we must consider what it is useful for. This sort of predictor could be useful to help climbers know about where they relate to other climbers. If they are climbing a much lower grade than someone with similar stats then they might be able to infer a weakness they have and need to work on to progress much quicker. Additionally we could expand this model to predict per route. If we did something like that then climbers could use it to determine the odds they have at climbing a certain route. To further operationalize the model we would have to continue adding to its data. To do this we could continue to scrape 8a.nu for new entries as climbing is a sport that is ever evolving. Finally in its current state there are some issues that could arrise of the model socially. Climbing is a sport that has a rich history of competitors having eating disorders. It is little suprised that the model showed weight as a massive predictor. Competition climbers are usually very lean athletes who go on extremem diets to prepare for competitions. At any level of climbing the less weight you have to take up the wall the easier it will be. Having data like this know could lead to some people wanting to lose weight to climb harder and they might go about it in extreme ways. This could further increase the severity of an already problematic attitude towards climbing. Additionally this data is probably somewhat biased towards more hardcore climbers so they numbers might not be representive of all climbers. This is due to the fact that 8a.nu is a website for more serious climbers to log climbs and is not used by many newer climbers. 
+Finally when looking at operationalizing the project we must consider what it is useful for. This sort of predictor could be useful to help climbers know about where they relate to other climbers. If they are climbing a much lower grade than someone with similar stats then they might be able to infer a weakness they have and need to work on to progress much quicker. Additionally we could expand this model to predict per route. If we did something like that then climbers could use it to determine the odds they have at climbing a certain route. To further operationalize the model we would have to continue adding to its data. To do this, we could continue to scrape 8a.nu for new entries as climbing is a sport that is ever evolving. Finally in its current state there are some social issues that could arrise from the model. Climbing is a sport that has a history of competitors having eating disorders. It is of little suprise that the model showed weight as a massive predictor. Competition climbers are usually very lean athletes who go on extremem diets to prepare for competitions. At any level of climbing the less weight you have to take up the wall the easier it will be. Having data like this know could lead to some people wanting to lose weight to climb harder and they might go about it in extreme ways. This could further increase the severity of an already problematic attitude towards climbing. Additionally this data is probably somewhat biased towards more experienced climbers so they numbers might not be representive of all climbers. This is due to the fact that 8a.nu is a website for more serious climbers to log climbs and is not used by many newer climbers. 
