@@ -1,139 +1,23 @@
 ---
-title: "Climbing Insights"
-author: "Ian McDonald"
+title: "Climbing Insights" 
+subtitle: "Ian McDonald's Data Science Portfolio"
 output:
   html_document:
     df_print: paged
-  html_notebook: default
-  pdf_document: default
 ---
-Intro:
 
-Welcome to my data science project. The data I chose to examine for this was a dataset that was scraped from 8a.nu. This is a popular website used by rock climbers. 8a.nu offers a feature that allows users to log the climbs that they have completed. Additionally there is user data included that has information about the climbers who logged these climbs. As a rock climber myself, this data interested me as I hoped to learn a little bit more about climbers, but also learn more about climbing areas and individual climbs.
+## Abstract
 
-Setup
+Analyzing climbing data to discover what keeps climbers strong and safe.
 
-loading libraries that we used
-```{r}
-library("tidyverse")
-library("RSQLite")
-library("ggplot2")
-library("RColorBrewer")
-```
+### 1. Discovery and Data Preparation
 
-Creating a connection to the database we will be using. This database houses all of the user entered data the was taken from 8a.nu This data is all self reported data. Due to this there will be some level of inaccuracy and potentially wrong data that users have entered. This will cause there to be lots of outliers in some of the data.
+Part one shows the data that I have found for my project as well as the cleaning and collections of data. Finally it includes some simple visualizations.
 
-Download data from https://www.kaggle.com/dcohen21/8anu-climbing-logbookg
-```{r x}
-con <- dbConnect(RSQLite::SQLite(), "database.sqlite")
-dbListTables(con)
-```
+### 2. Model Planning and Building
 
-Gather All Data
-We are first going to grab all data from each table and store them in a dataframe.
-Right now our data is in the form of 4 tables store in an sqlite database. We will be sending a query to this database asking for each table one by one and creating dataframes from these results.
-The ascents table has each recorded ascent from different users.
-The grades table has a chart to convert the grades of climbs to the different grading systems used by people in differnet parts of the world.
-The methods table holds a key to look at different methods of climbing such as trad, sport, or bouldering.
-Finally the users table holds information about different users.
-```{r}
+Part two is planning and building a model to determine the highest grade someone can climb based on serveral factors about that person. Additionally we gathered more data and did visualizations looking at climber safety.
 
-ascents <- dbGetQuery(con, "SELECT * FROM ASCENT;")
-grades <- dbGetQuery(con, "SELECT * FROM GRADE");
-methods <- dbGetQuery(con, "SELECT * FROM METHOD;")
-users <- dbGetQuery(con, "SELECT * FROM USER;")
+### 3. Results and Operationalization
 
-```
-
-Time to Clean and Tidy Data
-
-First lets look at the Users Dataframe we created.
-```{r}
-dim(users)
-colnames(users)
-```
-Cleaning user dataframe.
-First we take all values in the height and weight and started columns and replace them with N/A value
-Then we need to take all empty valus in the remaining tables string fields and replace empty strings with na values
-
-Finally we create a tibble that will have the data we are going to be most interested in from this table.
-```{r}
-colnames(users)[colnames(users) == 'id'] <- 'user_id'
-users[, 7:9][users[,7:9]==0] <- NA
-users[, 10:20][users[,10:20]==""] <- NA
-userInfo <- dplyr::tibble(id=users$user_id, height=users$height, weight=users$weight, city=users$city, country=users$country, year_started=users$started, occupation=users$occupation, birthday=users$birth)
-```
-
-Next Looking at the ascent table
-A lot of data in this table is specific to what we are deciding to look at. We will need to clean a lot of this data.
-```{r}
-dim(ascents)
-colnames(ascents)
-```
-
-This code is to replace empty values with NA in certain rows and to remove other rows from the data frame that we wont be using
-```{r}
-ascents[, 4][ascents[,4]==""] <- NA
-ascents[, 14][ascents[,14]==""] <- NA
-ascents[, 15][ascents[,15]==0] <- NA
-ascents[, 16][ascents[,16]==""] <- NA
-ascents[, 17][ascents[,17]==0] <- NA
-ascents[, 18][ascents[,18]==""] <- NA
-ascents[, 19][ascents[,19]==""] <- NA
-ascents[, 20][ascents[,20]=="\n"] <- NA
-ascents$raw_notes <- NULL
-```
-
-##Next Looking at the grades table
-The grades table holds information used to convert between the differnet climbing systems. There are 4 main climbing rating systems.
-```{r}
-dim(grades)
-colnames(grades)
-```
-
-```{r}
-grades[, 1:14][grades[,1:14]==0] <- NA
-```
-
-Time to clean the last table the method table
-The method table holds information on the method of climbing done.
-In climbing there are different style of climbing based on certain aspects such as if you have climbed a route before. This table helps us assign a type to each climb that is logged.
-```{r}
-dim(methods)
-colnames(methods)
-```
-
-```{r}
-methods$name <- as.factor(methods$name)
-levels(methods$name)
-```
-
-Early Exploration
-
-The ascents table has a lot of logged climbs in it. Lets look at this data
-Plot number of climbs logged at each different grade as a bar chart
-```{r}
-plot <- ggplot(ascents, aes(x=grade_id)) + geom_bar() + xlab("Grade") + ylab("Number of Logged Climbs")
-plot
-```
-
-Look at the hardest climb each user has done and the year they started climbing
-```{r}
-hardestClimb <- ascents %>% group_by(user_id) %>% filter(grade_id == max(grade_id))
-hardestWithYear <- merge(hardestClimb,users, by="user_id")
-startPlot <- ggplot(hardestWithYear, aes(x=started,y=grade_id)) + geom_point() +  xlim(1950, 2019) + xlab("Year Started Climbing") + ylab("Highest Grade Climbed")
-startPlot
-```
-
-Now lets look at the number of users from each of the top 10 countries
-```{r}
-usersPerCountry <- count(users, country)
-usersPerCountry <- usersPerCountry[order(usersPerCountry$n, decreasing = TRUE),]
-usersPerCountry$country <- factor(usersPerCountry$country, levels = usersPerCountry$country)
-usersPerCountry <- head(usersPerCountry, 10)
-plotP <- ggplot(usersPerCountry, aes(country, n)) + geom_col() + ylab("Number of Users") + xlab("Country")
-plotP
-```
-
-
-Finally some things I would like to look into are things like the relationship between size and climbing ability, the relationship between location and climbing ability.  
+Finally we have the results and operationalization including a rebuild of the model and more visualization and analysis.
